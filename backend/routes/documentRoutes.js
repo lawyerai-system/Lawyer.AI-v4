@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const { protect } = require('../middleware/authMiddleware');
+const { checkAIAccess } = require('../middleware/aiCheckMiddleware');
 const documentController = require('../controllers/documentController');
 
 const router = express.Router();
@@ -38,6 +39,6 @@ const upload = multer({
 });
 
 // Route: POST /api/document/analyze
-router.post('/analyze', protect, upload.single('document'), documentController.analyzeDocument);
+router.post('/analyze', protect, checkAIAccess, upload.single('document'), documentController.analyzeDocument);
 
 module.exports = router;

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
 import DeleteModal from '../../components/Common/DeleteModal';
-import { 
-    FaSearch, FaGavel, FaTrash, FaEdit, FaCheck, FaTimes, 
+import {
+    FaSearch, FaGavel, FaTrash, FaEdit, FaCheck, FaTimes,
     FaBookmark, FaRegBookmark, FaChevronLeft, FaChevronRight,
     FaBalanceScale, FaUserAlt, FaCalendarAlt
 } from 'react-icons/fa';
@@ -11,41 +11,68 @@ import {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: 1rem;
+
+  @media (min-width: 640px) {
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1.5rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const TitleSection = styled.div`
   h2 {
     color: var(--text-main);
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 800;
+    @media (min-width: 640px) {
+      font-size: 1.8rem;
+    }
   }
   p {
     color: var(--text-secondary);
     margin: 0.5rem 0 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    @media (min-width: 640px) {
+      font-size: 0.9rem;
+    }
   }
 `;
 
 const Controls = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
 `;
 
 const SearchBox = styled.div`
   position: relative;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: 250px;
+  }
+
   svg {
     position: absolute;
     left: 1rem;
@@ -54,23 +81,29 @@ const SearchBox = styled.div`
     color: var(--text-secondary);
   }
   input {
+    width: 100%;
     padding: 0.7rem 1rem 0.7rem 2.8rem;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 12px;
     color: white;
-    width: 250px;
     &:focus { outline: none; border-color: var(--primary); }
   }
 `;
 
 const FilterSelect = styled.select`
+  width: 100%;
   padding: 0.7rem 1rem;
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: 12px;
   color: white;
   cursor: pointer;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
+
   &:focus { outline: none; border-color: var(--primary); }
 `;
 
@@ -78,13 +111,22 @@ const TableContainer = styled.div`
   background: var(--bg-panel);
   border-radius: 20px;
   border: 1px solid var(--border);
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+  }
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+  min-width: 900px;
 `;
 
 const Th = styled.th`
@@ -136,19 +178,19 @@ const StatusBadge = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   background: ${props => {
-    switch(props.status) {
-      case 'APPROVED': return 'rgba(16, 185, 129, 0.1)';
-      case 'REJECTED': return 'rgba(239, 68, 68, 0.1)';
-      default: return 'rgba(245, 158, 11, 0.1)';
-    }
-  }};
+        switch (props.status) {
+            case 'APPROVED': return 'rgba(16, 185, 129, 0.1)';
+            case 'REJECTED': return 'rgba(239, 68, 68, 0.1)';
+            default: return 'rgba(245, 158, 11, 0.1)';
+        }
+    }};
   color: ${props => {
-    switch(props.status) {
-      case 'APPROVED': return '#10b981';
-      case 'REJECTED': return '#ef4444';
-      default: return '#f59e0b';
-    }
-  }};
+        switch (props.status) {
+            case 'APPROVED': return '#10b981';
+            case 'REJECTED': return '#ef4444';
+            default: return '#f59e0b';
+        }
+    }};
 `;
 
 const ActionBtn = styled.button`
@@ -243,8 +285,8 @@ const CaseManagement = () => {
 
     const handleToggleImportance = async (caseObj) => {
         try {
-            const res = await api.patch(`/api/admin/cases/${caseObj._id}`, { 
-                isImportant: !caseObj.isImportant 
+            const res = await api.patch(`/api/admin/cases/${caseObj._id}`, {
+                isImportant: !caseObj.isImportant
             });
             if (res.data.status === 'success') {
                 setCases(cases.map(c => c._id === caseObj._id ? res.data.data.case : c));
@@ -276,8 +318,8 @@ const CaseManagement = () => {
                 <Controls>
                     <SearchBox>
                         <FaSearch />
-                        <input 
-                            placeholder="Search legal precedents..." 
+                        <input
+                            placeholder="Search legal precedents..."
                             value={search}
                             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                         />
@@ -335,7 +377,7 @@ const CaseManagement = () => {
                                         </StatusBadge>
                                     </Td>
                                     <Td>
-                                        <ActionBtn 
+                                        <ActionBtn
                                             color={caseObj.isImportant ? '#6c5dd3' : 'var(--text-secondary)'}
                                             hoverColor="#6c5dd3"
                                             onClick={() => handleToggleImportance(caseObj)}
@@ -345,27 +387,27 @@ const CaseManagement = () => {
                                         </ActionBtn>
                                     </Td>
                                     <Td style={{ textAlign: 'right' }}>
-                                        <ActionBtn 
-                                            color="#10b981" 
-                                            hoverColor="#059669" 
+                                        <ActionBtn
+                                            color="#10b981"
+                                            hoverColor="#059669"
                                             disabled={caseObj.status === 'APPROVED'}
                                             onClick={() => handleUpdateStatus(caseObj, 'APPROVED')}
                                             title="Approve Submission"
                                         >
                                             <FaCheck />
                                         </ActionBtn>
-                                        <ActionBtn 
-                                            color="#f59e0b" 
-                                            hoverColor="#d97706" 
+                                        <ActionBtn
+                                            color="#f59e0b"
+                                            hoverColor="#d97706"
                                             disabled={caseObj.status === 'REJECTED'}
                                             onClick={() => handleUpdateStatus(caseObj, 'REJECTED')}
                                             title="Reject Submission"
                                         >
                                             <FaTimes />
                                         </ActionBtn>
-                                        <ActionBtn 
-                                            color="#ef4444" 
-                                            hoverColor="#dc2626" 
+                                        <ActionBtn
+                                            color="#ef4444"
+                                            hoverColor="#dc2626"
                                             onClick={() => { setDeleteId(caseObj._id); setCaseToDelete(caseObj); }}
                                             title="Permanently Delete"
                                         >
@@ -377,10 +419,10 @@ const CaseManagement = () => {
                         )}
                     </tbody>
                 </Table>
-                
+
                 {!loading && totalPages > 1 && (
                     <Pagination>
-                        <div className="info">Records {((page-1) * 10) + 1} to {Math.min(page * 10, totalResults)} of {totalResults}</div>
+                        <div className="info">Records {((page - 1) * 10) + 1} to {Math.min(page * 10, totalResults)} of {totalResults}</div>
                         <div className="btns">
                             <PageBtn disabled={page === 1} onClick={() => setPage(page - 1)}><FaChevronLeft /></PageBtn>
                             {[...Array(totalPages)].map((_, i) => (

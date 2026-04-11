@@ -118,11 +118,16 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
+        // Clear state
         setUser(null);
         setToken(null);
+
+        // Clear storage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        // axios defaults handled in utils/axios.js
+
+        // Optional: clear any other session data
+        sessionStorage.clear();
     };
 
     // Helper to manually update user state (e.g. after image upload)

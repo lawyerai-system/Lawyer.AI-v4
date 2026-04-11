@@ -908,6 +908,17 @@ exports.signup = async (req, res) => {
       verificationTokenExpires: undefined
     });
 
+    // Check if Maintenance Mode is active (Restrict signup for non-admins)
+    const PlatformSettings = require('../models/PlatformSettings');
+    const settings = await PlatformSettings.findOne();
+    if (settings && settings.isMaintenanceMode && role !== 'admin') {
+      return res.status(503).json({
+        status: 'fail',
+        message: 'Platform is currently under maintenance. New registration is temporarily disabled.',
+        maintenance: true
+      });
+    }
+
     // Verification email removed as per request
 
     if (role === 'lawyer') {
@@ -980,8 +991,16 @@ exports.login = async (req, res) => {
     }
     */
 
-    // Removed phone verification check on login to allow them to reach profile page
-    // if (!user.phoneVerified && user.role !== 'admin') { ... }
+    // Check if Maintenance Mode is active (Restrict login for non-admins)
+    const PlatformSettings = require('../models/PlatformSettings');
+    const settings = await PlatformSettings.findOne();
+    if (settings && settings.isMaintenanceMode && user.role !== 'admin') {
+      return res.status(503).json({
+        status: 'fail',
+        message: 'Platform is currently under maintenance. Regular users cannot log in at this time.',
+        maintenance: true
+      });
+    }
 
     createSendToken(user, 200, res);
   } catch (err) {
@@ -1021,7 +1040,7 @@ exports.forgotPassword = async (req, res) => {
 
     // 2. Generate the random reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    
+
     // 3. Hash it and set to database
     user.passwordResetToken = crypto
       .createHash('sha256')
@@ -1043,7 +1062,7 @@ exports.forgotPassword = async (req, res) => {
       });
     } catch (err) {
       console.error('CRITICAL: Forgot Password Email Error:', err);
-      
+
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });

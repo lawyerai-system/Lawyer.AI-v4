@@ -2,37 +2,52 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
 import DeleteModal from '../../components/Common/DeleteModal';
-import { 
-    FaSearch, FaFilter, FaStar, FaRegStar, FaTrash, FaEdit, 
+import {
+    FaSearch, FaFilter, FaStar, FaRegStar, FaTrash, FaEdit,
     FaExternalLinkAlt, FaChevronLeft, FaChevronRight, FaBlog
 } from 'react-icons/fa';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: 1rem;
+
+  @media (min-width: 640px) {
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1.5rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const TitleSection = styled.div`
   h2 {
     color: var(--text-main);
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 800;
+    @media (min-width: 640px) {
+      font-size: 1.8rem;
+    }
   }
   p {
     color: var(--text-secondary);
     margin: 0.5rem 0 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    @media (min-width: 640px) {
+      font-size: 0.9rem;
+    }
   }
 `;
 
@@ -40,10 +55,21 @@ const Controls = styled.div`
   display: flex;
   gap: 1rem;
   align-items: center;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
 `;
 
 const SearchBox = styled.div`
   position: relative;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: 300px;
+  }
+
   svg {
     position: absolute;
     left: 1rem;
@@ -52,12 +78,12 @@ const SearchBox = styled.div`
     color: var(--text-secondary);
   }
   input {
+    width: 100%;
     padding: 0.7rem 1rem 0.7rem 2.8rem;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 12px;
     color: white;
-    width: 300px;
     &:focus { outline: none; border-color: var(--primary); }
   }
 `;
@@ -66,13 +92,22 @@ const TableContainer = styled.div`
   background: var(--bg-panel);
   border-radius: 20px;
   border: 1px solid var(--border);
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+  }
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+  min-width: 800px;
 `;
 
 const Th = styled.th`
@@ -235,8 +270,8 @@ const BlogManagement = () => {
                 <Controls>
                     <SearchBox>
                         <FaSearch />
-                        <input 
-                            placeholder="Find by title or content..." 
+                        <input
+                            placeholder="Find by title or content..."
                             value={search}
                             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                         />
@@ -277,7 +312,7 @@ const BlogManagement = () => {
                                         {new Date(blog.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </Td>
                                     <Td>
-                                        <ActionBtn 
+                                        <ActionBtn
                                             color={blog.isFeatured ? '#fbbf24' : 'var(--text-secondary)'}
                                             hoverColor="#fbbf24"
                                             onClick={() => handleToggleFeatured(blog)}
@@ -288,9 +323,9 @@ const BlogManagement = () => {
                                     </Td>
                                     <Td style={{ textAlign: 'right' }}>
                                         <ActionBtn hoverColor="var(--primary)" title="Edit Post"><FaEdit /></ActionBtn>
-                                        <ActionBtn 
-                                            color="#ef4444" 
-                                            hoverColor="#ff4d4d" 
+                                        <ActionBtn
+                                            color="#ef4444"
+                                            hoverColor="#ff4d4d"
                                             onClick={() => { setDeleteId(blog._id); setBlogToDelete(blog); }}
                                             title="Delete Post"
                                         >
@@ -302,7 +337,7 @@ const BlogManagement = () => {
                         )}
                     </tbody>
                 </Table>
-                
+
                 {!loading && totalPages > 1 && (
                     <Pagination>
                         <div className="info">Showing {blogs.length} of {totalResults} entries</div>

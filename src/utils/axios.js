@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const instance = axios.create({
     baseURL: '/', // Vite proxy handles /api requests to localhost:5000
@@ -21,16 +22,26 @@ instance.interceptors.request.use(
     }
 );
 
-// Add a response interceptor (optional, but good for global error handling)
+// Add a response interceptor
 instance.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Optionally handle 401 (Unauthorized) here by logging out
-        if (error.response && error.response.status === 401) {
-            // dispatch logout action or redirect
-            console.warn("Unauthorized access - redirecting to login");
-            // window.location.href = '/'; // Be careful with this, might cause loops if not handled right
+        // Handle Maintenance Mode
+        if (error.response && error.response.data && error.response.data.maintenance) {
+            // Trigger the central Maintenance Modal via custom event
+            window.dispatchEvent(new CustomEvent('maintenance-alert', {
+                detail: error.response.data.message
+            }));
+
+            // Still keep a toast as a secondary notification (optional, but requested to change UX)
+            toast.error("Restricted Action: Maintenance Active", { id: 'maintenance-locked' });
         }
+
+        // Handle 401 (Unauthorized)
+        if (error.response && error.response.status === 401) {
+            console.warn("Unauthorized access");
+        }
+
         return Promise.reject(error);
     }
 );

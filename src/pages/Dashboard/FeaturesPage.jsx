@@ -1,14 +1,27 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { 
-  FaRobot, FaGavel, FaPenNib, FaBook, FaScaleUnbalanced, 
-  FaUsers, FaShieldHalved, FaLaptop, FaFileSignature, 
+import {
+  FaRobot, FaGavel, FaPenNib, FaBook, FaScaleUnbalanced,
+  FaUsers, FaShieldHalved, FaLaptop, FaFileSignature,
   FaBrain, FaFileContract, FaChartLine, FaMagnifyingGlass,
   FaComments, FaGraduationCap, FaPeopleGroup, FaCodeBranch
 } from 'react-icons/fa6';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
+import AIModel from '../../components/Landing/AIModel';
 import { useAuth } from '../../context/AuthContext';
+
+const FixedBackground = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+`;
+
+const ContentContainer = styled.div`
+  position: relative;
+  z-index: 10;
+`;
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -248,35 +261,40 @@ const FeaturesPage = () => {
   return (
     <PageWrapper>
       <LandingNav />
-      <PageContainer>
-        <HeroSection>
-          <h1>Expertise Redefined</h1>
-          <p>Explore our suite of next-generation legal tools designed to empower every citizen, student, and legal practitioner.</p>
-        </HeroSection>
+      <FixedBackground>
+        <AIModel />
+      </FixedBackground>
+      <ContentContainer>
+        <PageContainer>
+          <HeroSection>
+            <h1>Expertise Redefined</h1>
+            <p>Explore our suite of next-generation legal tools designed to empower every citizen, student, and legal practitioner.</p>
+          </HeroSection>
 
-        {featuresData.map((cat, catIndex) => (
-          <CategorySection key={catIndex}>
-            <CategoryHeader>
-              <h2>{cat.icon} {cat.category}</h2>
-              <div className="line" />
-            </CategoryHeader>
-            <Grid>
-              {cat.features
-                .filter(f => !user || f.allowedRoles.includes(user.role))
-                .map((feature, fIndex) => (
-                <FeatureCard key={fIndex}>
-                  <div className="icon-wrapper">
-                    {feature.icon}
-                  </div>
-                  <h3>{feature.title}</h3>
-                  <p>{feature.description}</p>
-                </FeatureCard>
-              ))}
-            </Grid>
-          </CategorySection>
-        ))}
-      </PageContainer>
-      <LandingFooter />
+          {featuresData.map((cat, catIndex) => (
+            <CategorySection key={catIndex}>
+              <CategoryHeader>
+                <h2>{cat.icon} {cat.category}</h2>
+                <div className="line" />
+              </CategoryHeader>
+              <Grid>
+                {cat.features
+                  .filter(f => !user || f.allowedRoles.includes(user.role))
+                  .map((feature, fIndex) => (
+                    <FeatureCard key={fIndex}>
+                      <div className="icon-wrapper">
+                        {feature.icon}
+                      </div>
+                      <h3>{feature.title}</h3>
+                      <p>{feature.description}</p>
+                    </FeatureCard>
+                  ))}
+              </Grid>
+            </CategorySection>
+          ))}
+        </PageContainer>
+        <LandingFooter />
+      </ContentContainer>
     </PageWrapper>
   );
 };

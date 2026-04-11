@@ -4,58 +4,79 @@ import api from '../../utils/axios';
 import { useAuth } from '../../context/AuthContext';
 import DeleteModal from '../../components/Common/DeleteModal';
 import ConfirmModal from '../../components/Common/ConfirmModal';
-import { 
-    FaSearch, FaFilter, FaUserShield, FaUserGraduate, FaUser, 
-    FaUserSlash, FaUserCheck, FaTrash, FaEllipsisV, FaChevronLeft, 
-    FaChevronRight, FaInfoCircle, FaShieldAlt 
+import {
+    FaSearch, FaFilter, FaUserShield, FaUserGraduate, FaUser,
+    FaUserSlash, FaUserCheck, FaTrash, FaEllipsisV, FaChevronLeft,
+    FaChevronRight, FaInfoCircle, FaShieldAlt
 } from 'react-icons/fa';
 import UserAvatar from '../../components/Common/UserAvatar';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: 1rem;
+
+  @media (min-width: 640px) {
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+  }
 `;
 
 const TitleSection = styled.div`
   h2 {
     color: var(--text-main);
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    @media (min-width: 640px) {
+      font-size: 1.8rem;
+    }
   }
   p {
     color: var(--text-secondary);
     margin: 0.5rem 0 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    @media (min-width: 640px) {
+      font-size: 0.9rem;
+    }
   }
 `;
 
 const ActionGrid = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 1rem;
-  flex-wrap: wrap;
   width: 100%;
   background: var(--bg-panel);
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    padding: 1.5rem;
+  }
 `;
 
 const SearchBox = styled.div`
   flex: 1;
-  min-width: 250px;
+  width: 100%;
   position: relative;
   
   input {
@@ -87,9 +108,15 @@ const SearchBox = styled.div`
 const FilterGroup = styled.div`
   display: flex;
   gap: 0.8rem;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
 `;
 
 const Select = styled.select`
+  flex: 1;
   padding: 0.8rem 1.2rem;
   background: var(--bg-dark);
   border: 1px solid var(--border);
@@ -99,6 +126,12 @@ const Select = styled.select`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 0;
+
+  @media (min-width: 768px) {
+    flex: none;
+    min-width: 150px;
+  }
 
   &:focus {
     outline: none;
@@ -112,7 +145,16 @@ const TableWrapper = styled.div`
   border: 1px solid var(--border);
   overflow-x: auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+  }
 `;
+
 
 const Table = styled.table`
   width: 100%;
@@ -179,13 +221,13 @@ const RoleBadge = styled.span`
   gap: 0.5rem;
   
   ${props => {
-    switch (props.role) {
-      case 'admin': return 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);';
-      case 'lawyer': return 'background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
-      case 'law_student': return 'background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.2);';
-      default: return 'background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);';
-    }
-  }}
+        switch (props.role) {
+            case 'admin': return 'background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);';
+            case 'lawyer': return 'background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);';
+            case 'law_student': return 'background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.2);';
+            default: return 'background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);';
+        }
+    }}
 `;
 
 const StatusBadge = styled.span`
@@ -302,7 +344,7 @@ const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ total: 0, pages: 1 });
-    
+
     // Filters & Search
     const [filters, setFilters] = useState({
         search: '',
@@ -407,10 +449,10 @@ const UserManagement = () => {
             <ActionGrid>
                 <SearchBox>
                     <FaSearch />
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         name="search"
-                        placeholder="Search by name or email..." 
+                        placeholder="Search by name or email..."
                         value={filters.search}
                         onChange={handleFilterChange}
                     />
@@ -453,10 +495,10 @@ const UserManagement = () => {
                                     <tr key={u._id}>
                                         <Td>
                                             <UserInfo>
-                                                <UserAvatar 
-                                                    src={u.profileImage} 
-                                                    name={u.name} 
-                                                    size="40px" 
+                                                <UserAvatar
+                                                    src={u.profileImage}
+                                                    name={u.name}
+                                                    size="40px"
                                                     className="avatar"
                                                 />
                                                 <div className="details">
@@ -487,16 +529,16 @@ const UserManagement = () => {
                                                 <ActionBtn title="View Details" onClick={() => setSelectedUser(u)}>
                                                     <FaInfoCircle size={14} />
                                                 </ActionBtn>
-                                                <ActionBtn 
-                                                    title={u.isActive ? "Suspend Account" : "Reactivate"} 
+                                                <ActionBtn
+                                                    title={u.isActive ? "Suspend Account" : "Reactivate"}
                                                     variant={u.isActive ? 'danger' : 'success'}
                                                     disabled={u.role === 'admin'}
                                                     onClick={() => openConfirm('status', u)}
                                                 >
                                                     {u.isActive ? <FaUserSlash size={14} /> : <FaUserCheck size={14} />}
                                                 </ActionBtn>
-                                                <ActionBtn 
-                                                    variant="danger" 
+                                                <ActionBtn
+                                                    variant="danger"
                                                     title="Permanently Delete"
                                                     disabled={u.role === 'admin' || u._id === currentUser?.id}
                                                     onClick={() => setDeleteModal({ isOpen: true, user: u })}
@@ -519,22 +561,22 @@ const UserManagement = () => {
                             Showing page <b>{filters.page}</b> of <b>{stats.pages}</b>
                         </div>
                         <div className="btns">
-                            <PageBtn 
-                                disabled={filters.page === 1} 
+                            <PageBtn
+                                disabled={filters.page === 1}
                                 onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
                             >
                                 <FaChevronLeft />
                             </PageBtn>
                             {[...Array(stats.pages)].map((_, i) => (
-                                <PageBtn 
-                                    key={i} 
+                                <PageBtn
+                                    key={i}
                                     active={filters.page === i + 1}
                                     onClick={() => setFilters(f => ({ ...f, page: i + 1 }))}
                                 >
                                     {i + 1}
                                 </PageBtn>
                             )).slice(0, 5)}
-                            <PageBtn 
+                            <PageBtn
                                 disabled={filters.page === stats.pages || stats.pages === 0}
                                 onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
                             >
@@ -551,10 +593,10 @@ const UserManagement = () => {
                     <ModalContent onClick={e => e.stopPropagation()}>
                         <ModalHeader>
                             <ProfileSection>
-                                <UserAvatar 
-                                    src={selectedUser.profileImage} 
-                                    name={selectedUser.name} 
-                                    size="90px" 
+                                <UserAvatar
+                                    src={selectedUser.profileImage}
+                                    name={selectedUser.name}
+                                    size="90px"
                                     className="avatar"
                                 />
                                 <h3>{selectedUser.name}</h3>
@@ -562,7 +604,7 @@ const UserManagement = () => {
                             </ProfileSection>
                         </ModalHeader>
                         <ModalBody>
-                             <InfoGrid>
+                            <InfoGrid>
                                 <InfoItem>
                                     <label>Role</label>
                                     <p style={{ textTransform: 'capitalize' }}>{selectedUser.role.replace('_', ' ')}</p>
@@ -581,13 +623,13 @@ const UserManagement = () => {
                                     <label>Last Seen</label>
                                     <p>{selectedUser.lastActive ? new Date(selectedUser.lastActive).toLocaleDateString() : 'N/A'}</p>
                                 </InfoItem>
-                             </InfoGrid>
+                            </InfoGrid>
 
-                             <div style={{ marginBottom: '1.5rem' }}>
+                            <div style={{ marginBottom: '1.5rem' }}>
                                 <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '8px', display: 'block' }}>Change Access Level</label>
-                                <Select 
-                                    style={{ width: '100%' }} 
-                                    value={selectedUser.role} 
+                                <Select
+                                    style={{ width: '100%' }}
+                                    value={selectedUser.role}
                                     disabled={selectedUser.role === 'admin'}
                                     onChange={(e) => openConfirm('role', { userId: selectedUser._id, newRole: e.target.value })}
                                 >
@@ -596,30 +638,30 @@ const UserManagement = () => {
                                     <option value="lawyer">Lawyer</option>
                                     <option value="admin">Administrator</option>
                                 </Select>
-                             </div>
+                            </div>
 
-                             <ActionRow>
-                                <ActionButton 
+                            <ActionRow>
+                                <ActionButton
                                     style={{ flex: 1, background: selectedUser.isActive ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: selectedUser.isActive ? '#ef4444' : '#10b981', border: `1px solid ${selectedUser.isActive ? '#ef4444' : '#10b981'}` }}
                                     onClick={() => openConfirm('status', selectedUser)}
                                     disabled={selectedUser.role === 'admin'}
                                 >
                                     {selectedUser.isActive ? 'Suspend User' : 'Unsuspend User'}
                                 </ActionButton>
-                                <ActionButton 
+                                <ActionButton
                                     style={{ background: 'transparent', color: '#64748b', border: '1px solid #334155' }}
                                     onClick={() => setSelectedUser(null)}
                                 >
                                     Close
                                 </ActionButton>
-                             </ActionRow>
+                            </ActionRow>
                         </ModalBody>
                     </ModalContent>
                 </ModalOverlay>
             )}
 
             {/* Confirm Generic Modal */}
-            <ConfirmModal 
+            <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal({ isOpen: false, type: '', data: null })}
                 onConfirm={() => {
@@ -627,14 +669,14 @@ const UserManagement = () => {
                     if (confirmModal.type === 'role') handleRoleUpdate(confirmModal.data.userId, confirmModal.data.newRole);
                 }}
                 title={confirmModal.type === 'status' ? (confirmModal.data?.isActive ? 'Suspend User?' : 'Reactivate User?') : 'Update User Role?'}
-                message={confirmModal.type === 'status' 
+                message={confirmModal.type === 'status'
                     ? `Are you sure you want to ${confirmModal.data?.isActive ? 'suspend' : 'reactivate'} ${confirmModal.data?.name}'s access to the platform?`
                     : `Changing this user's role will modify their permissions immediately.`}
                 confirmText="Confirm Action"
                 type={confirmModal.type === 'status' && confirmModal.data?.isActive ? 'danger' : 'primary'}
             />
 
-            <DeleteModal 
+            <DeleteModal
                 isOpen={deleteModal.isOpen}
                 onClose={() => setDeleteModal({ isOpen: false, user: null })}
                 onConfirm={handleDelete}

@@ -70,11 +70,11 @@ const contactController = {
   // Retrieve submissions for admin
   getContactSubmissions: async (req, res) => {
     try {
-        const { issueType } = req.query;
-        let query = {};
-        if (issueType && issueType !== 'All') {
-            query.issueType = issueType;
-        }
+      const { issueType } = req.query;
+      let query = {};
+      if (issueType && issueType !== 'All') {
+        query.issueType = issueType;
+      }
 
       const contacts = await Contact.find(query)
         .sort({ createdAt: -1 })
@@ -106,6 +106,25 @@ const contactController = {
       const contact = await Contact.findByIdAndUpdate(
         id,
         { status },
+        { new: true }
+      );
+
+      if (!contact) return res.status(404).json({ success: false, message: 'Contact not found' });
+
+      res.status(200).json({ success: true, data: contact });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  },
+
+  updateIssueType: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { issueType } = req.body;
+
+      const contact = await Contact.findByIdAndUpdate(
+        id,
+        { issueType },
         { new: true }
       );
 

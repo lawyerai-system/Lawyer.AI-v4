@@ -7,8 +7,10 @@ import { useSocketContext } from '../../../context/SocketContext';
 import {
     FaPaperPlane, FaArrowLeft, FaThumbtack, FaRobot,
     FaChevronDown, FaChevronUp, FaScaleBalanced,
-    FaGavel, FaLightbulb, FaRotateRight, FaXmark
+    FaGavel, FaLightbulb, FaRotateRight, FaXmark,
+    FaTrash, FaPen
 } from 'react-icons/fa6';
+import ConfirmModal from '../../../components/Common/ConfirmModal';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-10px); }
@@ -218,25 +220,56 @@ const RoleTag = styled.span`
 
 const PinAction = styled.button`
   position: absolute;
-  right: -35px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: ${props => props.pinned ? '#f6ad55' : 'rgba(255,255,255,0.2)'};
+  top: -10px;
+  right: -10px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: ${props => props.pinned ? 'var(--primary)' : '#333'};
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 5px;
-  opacity: ${props => props.pinned ? 1 : 0};
+  opacity: 0;
   transition: all 0.2s;
+  z-index: 10;
   
-  &:hover { color: #f6ad55; transform: translateY(-50%) scale(1.2); }
+  &:hover { transform: scale(1.1); background: var(--primary); }
+`;
 
-  @media (max-width: 1024px) {
-    right: 5px;
-    top: 5px;
-    transform: none;
-    background: rgba(0,0,0,0.3);
-    border-radius: 50%;
+const MessageActions = styled.div`
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  display: flex;
+  gap: 0.3rem;
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 10;
+
+  ${MessageBubble}:hover & {
+    opacity: 1;
+  }
+`;
+
+const ActionIcon = styled.button`
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #333;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.7rem;
+  
+  &:hover { 
+    background: ${props => props.type === 'delete' ? '#e74c3c' : 'var(--primary)'};
+    transform: scale(1.1);
   }
 `;
 
@@ -285,6 +318,44 @@ const PrivacyNotice = styled.div`
     font-size: 1rem;
     flex-shrink: 0;
   }
+`;
+
+const DateSeparator = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05) 50%, transparent);
+  }
+
+  span {
+    background: rgba(40, 40, 50, 0.8);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #a0aec0;
+    font-weight: 600;
+    z-index: 1;
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(4px);
+  }
+`;
+
+const MessageTime = styled.span`
+  font-size: 0.65rem;
+  color: ${props => props.isOwn ? 'rgba(255,255,255,0.5)' : '#a0aec0'};
+  margin-top: 0.4rem;
+  display: block;
+  text-align: right;
+  font-weight: 500;
 `;
 
 const SuggestionItem = styled.div`
@@ -402,6 +473,10 @@ const ChatWindow = () => {
     const [messages, setMessages] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [error, setError] = useState(null);
+    const [editingId, setEditingId] = useState(null);
+    const [editValue, setEditValue] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [msgToDelete, setMsgToDelete] = useState(null);
 
     // Feature States
     const [summary, setSummary] = useState(null);
@@ -411,6 +486,22 @@ const ChatWindow = () => {
 
     const messagesAreaRef = useRef(null);
     const suggestionTimeoutRef = useRef(null);
+
+    const formatDateLabel = (dateStr) => {
+        const date = new Date(dateStr);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (date.toDateString() === today.toDateString()) return 'Today';
+        if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+        return date.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
+    const formatTime = (dateStr) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
 
     // Initial Fetch
     useEffect(() => {
@@ -524,7 +615,8 @@ const ChatWindow = () => {
                 type: chatInfo.chatType,
                 sender: user.id,
                 receiver: chatId,
-                role: user.role // Add role for local update
+                role: user.role,
+                createdAt: new Date().toISOString()
             };
 
             setMessages(prev => [...prev, newMsg]);
@@ -538,22 +630,43 @@ const ChatWindow = () => {
 
     const togglePin = async (msgId) => {
         try {
-            const res = await api.put(`/api/courtroom/${user.id}/messages/pin/${msgId}`);
-            if (res.data.status === 'success') {
-                const isPinned = !messages.find(m => m._id === msgId)?.isPinned;
-                setMessages(prev => prev.map(m => m._id === msgId ? { ...m, isPinned } : m));
-
-                // Emit socket event for real-time update
-                socket.emit('TOGGLE_PIN', {
-                    chatId,
-                    type: chatInfo.chatType,
-                    messageId: msgId,
-                    isPinned,
-                    senderId: user.id
-                });
-            }
+            await api.put(`/api/courtroom/${user.id}/messages/pin/${msgId}`);
+            setMessages(prev => prev.map(m => m._id === msgId ? { ...m, isPinned: !m.isPinned } : m));
         } catch (err) {
             console.error("Pin Error:", err);
+        }
+    };
+
+    const handleDelete = (msgId) => {
+        setMsgToDelete(msgId);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!msgToDelete) return;
+        try {
+            await api.delete(`/api/courtroom/${user.id}/messages/${msgToDelete}`);
+            setMessages(prev => prev.filter(m => m._id !== msgToDelete));
+            setMsgToDelete(null);
+            setShowDeleteModal(false);
+        } catch (err) {
+            console.error("Delete Error:", err);
+        }
+    };
+
+    const handleEditStart = (msg) => {
+        setEditingId(msg._id);
+        setEditValue(msg.message);
+    };
+
+    const handleEditSave = async (msgId) => {
+        if (!editValue.trim()) return;
+        try {
+            await api.patch(`/api/courtroom/${user.id}/messages/${msgId}`, { message: editValue });
+            setMessages(prev => prev.map(m => m._id === msgId ? { ...m, message: editValue } : m));
+            setEditingId(null);
+        } catch (err) {
+            console.error("Edit Error:", err);
         }
     };
 
@@ -667,31 +780,82 @@ const ChatWindow = () => {
                     <FaScaleBalanced className="lock-icon" />
                     <span>
                         Messages in this virtual courtroom are <strong>Temporary & Encrypted</strong>.
-                        They will disappear once the case is resolved or after 24 hours of inactivity to ensure legal compliance.
+                        They will disappear once the case is resolved or after <strong>15 days</strong> of inactivity to ensure legal compliance.
                     </span>
                 </PrivacyNotice>
+
                 {messages.map((msg, i) => {
                     const isOwn = msg.sender === user.id;
                     const displayRole = isOwn ? user.role : (msg.role || chatInfo.role);
+
+                    const msgDate = new Date(msg.createdAt).toDateString();
+                    const prevMsgDate = i > 0 ? new Date(messages[i - 1].createdAt).toDateString() : null;
+                    const showDateLabel = msgDate !== prevMsgDate;
+
                     return (
-                        <MessageBubble key={msg._id || i} isOwn={isOwn}>
-                            <div className="sender-info">
-                                {isOwn ? 'You' : (chatInfo.name.split(' ')[0])}
-                                <RoleTag role={displayRole}>{getRoleLabel(displayRole)}</RoleTag>
-                            </div>
-                            {msg.message}
-                            <PinAction
-                                className="pin-action"
-                                pinned={msg.isPinned}
-                                onClick={() => togglePin(msg._id)}
-                                title={msg.isPinned ? "Unpin message" : "Pin message"}
-                            >
-                                <FaThumbtack />
-                            </PinAction>
-                        </MessageBubble>
+                        <React.Fragment key={msg._id || i}>
+                            {showDateLabel && (
+                                <DateSeparator>
+                                    <span>{formatDateLabel(msg.createdAt)}</span>
+                                </DateSeparator>
+                            )}
+                            <MessageBubble isOwn={isOwn}>
+                                <div className="sender-info">
+                                    {isOwn ? 'You' : (chatInfo.name.split(' ')[0])}
+                                    <RoleTag role={displayRole}>{getRoleLabel(displayRole)}</RoleTag>
+                                </div>
+
+                                {editingId === msg._id ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        <textarea
+                                            style={{ background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.5rem', resize: 'none' }}
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                        />
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }} onClick={() => handleEditSave(msg._id)}>Save</button>
+                                            <button style={{ background: '#444', color: 'white', border: 'none', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }} onClick={() => setEditingId(null)}>Cancel</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {msg.message}
+                                        {isOwn && (
+                                            <MessageActions>
+                                                <ActionIcon onClick={() => handleEditStart(msg)} title="Edit Message"><FaPen /></ActionIcon>
+                                                <ActionIcon type="delete" onClick={() => handleDelete(msg._id)} title="Delete Message"><FaTrash /></ActionIcon>
+                                            </MessageActions>
+                                        )}
+                                    </>
+                                )}
+
+                                <MessageTime isOwn={isOwn}>
+                                    {formatTime(msg.createdAt)}
+                                </MessageTime>
+                                <PinAction
+                                    className="pin-action"
+                                    pinned={msg.isPinned}
+                                    onClick={() => togglePin(msg._id)}
+                                    title={msg.isPinned ? "Unpin message" : "Pin message"}
+                                >
+                                    <FaThumbtack />
+                                </PinAction>
+                            </MessageBubble>
+                        </React.Fragment>
                     );
                 })}
             </MessagesArea>
+
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={confirmDelete}
+                title="Delete Message?"
+                message="This message will be permanently removed for everyone in this courtroom. Are you sure you want to continue?"
+                confirmText="Delete Message"
+                type="danger"
+                icon={<FaTrash style={{ color: '#ef4444' }} />}
+            />
 
             {suggestions.length > 0 && (
                 <SuggestionBox>

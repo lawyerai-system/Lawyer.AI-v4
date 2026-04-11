@@ -8,14 +8,20 @@ import { toast } from 'react-hot-toast';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: 1rem;
+
+  @media (min-width: 640px) {
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.5rem;
 `;
 
 const Title = styled.h2`
@@ -24,16 +30,26 @@ const Title = styled.h2`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  font-size: 1.5rem;
+
+  @media (min-width: 640px) {
+    font-size: 1.8rem;
+  }
 `;
 
 const FilterSection = styled.div`
     display: flex;
+    flex-direction: column;
     gap: 1rem;
     background: var(--bg-panel);
     padding: 1.25rem;
     border-radius: 12px;
     border: 1px solid var(--border);
-    align-items: center;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: center;
+    }
 
     select, input {
         background: var(--bg-dark);
@@ -43,6 +59,11 @@ const FilterSection = styled.div`
         border-radius: 8px;
         outline: none;
         font-size: 0.9rem;
+        width: 100%;
+
+        @media (min-width: 768px) {
+            width: auto;
+        }
 
         &:focus { border-color: var(--primary); }
     }
@@ -52,12 +73,24 @@ const TableContainer = styled.div`
     background: var(--bg-panel);
     border-radius: 12px;
     border: 1px solid var(--border);
-    overflow: hidden;
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+    }
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+  min-width: 900px;
 `;
 
 const Th = styled.th`
@@ -109,14 +142,23 @@ const StatusSelect = styled.select`
     }
 `;
 
-const TypeBadge = styled.span`
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
+const TypeSelect = styled.select`
     background: rgba(108, 93, 211, 0.1);
     color: #6c5dd3;
+    border: 1px solid currentColor;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    outline: none;
+
+    option {
+        background: var(--bg-dark);
+        color: white;
+        text-transform: none;
+    }
 `;
 
 const ActionButton = styled.button`
@@ -176,6 +218,18 @@ const ContactManagement = () => {
         }
     };
 
+    const handleIssueTypeUpdate = async (id, newType) => {
+        try {
+            const res = await api.patch(`/api/contact/${id}/issue-type`, { issueType: newType });
+            if (res.data.success) {
+                setContacts(contacts.map(c => c._id === id ? { ...c, issueType: newType } : c));
+                toast.success(`Issue category updated to ${newType}`);
+            }
+        } catch (error) {
+            toast.error("Failed to update category");
+        }
+    };
+
     const confirmDelete = async () => {
         if (!deleteId) return;
         try {
@@ -190,8 +244,8 @@ const ContactManagement = () => {
         }
     };
 
-    const filteredContacts = contacts.filter(c => 
-        c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const filteredContacts = contacts.filter(c =>
+        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -216,9 +270,9 @@ const ContactManagement = () => {
                 </div>
                 <div style={{ flex: 1, position: 'relative' }}>
                     <FaSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                    <input 
+                    <input
                         style={{ width: '100%', paddingLeft: '35px' }}
-                        placeholder="Search by name, email or message content..." 
+                        placeholder="Search by name, email or message content..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -254,7 +308,18 @@ const ContactManagement = () => {
                                             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{contact.email}</div>
                                             <div style={{ fontSize: '0.75rem', color: 'var(--primary)', marginTop: '0.2rem', textTransform: 'capitalize' }}>{contact.role}</div>
                                         </Td>
-                                        <Td><TypeBadge>{contact.issueType || 'General'}</TypeBadge></Td>
+                                        <Td>
+                                            <TypeSelect
+                                                value={contact.issueType || 'General Contact'}
+                                                onChange={(e) => handleIssueTypeUpdate(contact._id, e.target.value)}
+                                            >
+                                                <option value="General Contact">General Contact</option>
+                                                <option value="Technical Issue">Technical Issue</option>
+                                                <option value="Report User">Report User</option>
+                                                <option value="Feature Request">Feature Request</option>
+                                                <option value="Feedback">Feedback</option>
+                                            </TypeSelect>
+                                        </Td>
                                         <Td style={{ maxWidth: '300px' }}>
                                             <div style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>{contact.message}</div>
                                         </Td>
@@ -262,8 +327,8 @@ const ContactManagement = () => {
                                             {new Date(contact.createdAt).toLocaleDateString()}
                                         </Td>
                                         <Td>
-                                            <StatusSelect 
-                                                value={contact.status} 
+                                            <StatusSelect
+                                                value={contact.status}
                                                 onChange={(e) => handleStatusUpdate(contact._id, e.target.value)}
                                             >
                                                 <option value="Pending">Pending</option>

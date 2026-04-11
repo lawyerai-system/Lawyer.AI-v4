@@ -20,15 +20,23 @@ const getMLAnswer = async (question) => {
 
 // Helper function to get answer from Google Gemini
 const getGeminiAnswer = async (question) => {
-    if (!process.env.GEMINI_API_KEY) return null;
+    if (!process.env.GEMINI_API_KEY) {
+        console.error("GEMINI_API_KEY is missing in .env");
+        return null;
+    }
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        // Using correct stable model name
         const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+
+        console.log(`[Gemini] Processing query: "${question.substring(0, 50)}..."`);
 
         // Fetch local database context
         let contextText = "";
         try {
             const legalResults = await legalService.searchLegalData(question);
+            console.log(`[LegalService] Found ${legalResults ? legalResults.length : 0} context items`);
+
             if (legalResults && legalResults.length > 0) {
                 // Take top 3 most relevant results
                 const topResults = legalResults.slice(0, 3);
@@ -67,9 +75,18 @@ ${contextText}User Query: ${question}`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        return response.text();
+        const text = response.text();
+
+        if (!text) {
+            console.warn("[Gemini] Empty response from API");
+            return null;
+        }
+
+        console.log("[Gemini] Successfully generated response");
+        return text;
     } catch (error) {
         console.error("Gemini API Error:", error.message);
+        if (error.response) console.error("Gemini Data:", error.response.data);
         return null;
     }
 };
@@ -149,7 +166,7 @@ const sendMessage = async (req, res) => {
     } catch (error) {
         console.error("Chat Error:", error);
         await logAIUsage('Legal AI', req.user?.id || 'anonymous', startTime, false, error.message);
-        
+
         // RETURN A FRIENDLY ERROR INSTEAD OF 500
         res.status(200).json({
             status: 'success',

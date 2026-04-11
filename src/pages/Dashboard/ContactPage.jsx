@@ -5,7 +5,20 @@ import { useAuth } from '../../context/AuthContext';
 import { FaPaperPlane, FaSpinner, FaEnvelope, FaPhone, FaLocationDot, FaCircleCheck, FaUserTag, FaCircleInfo } from 'react-icons/fa6';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
+import AIModel from '../../components/Landing/AIModel';
 import { toast } from 'react-hot-toast';
+
+const FixedBackground = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+`;
+
+const ContentContainer = styled.div`
+  position: relative;
+  z-index: 10;
+`;
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -301,74 +314,86 @@ const ContactPage = () => {
   return (
     <PageWrapper>
       <LandingNav />
-      <Container>
-        <Box>
-          <InfoSide>
-            <div>
-              <h2>Get in Touch</h2>
-              <p>Our legal experts and support staff are here to assist you with any inquiries regarding the platform or legal tools.</p>
+      <FixedBackground>
+        <AIModel />
+      </FixedBackground>
+      <ContentContainer>
+        <Container>
+          <Box>
+            <InfoSide>
+              <div>
+                <h2>Get in Touch</h2>
+                <p>Our legal experts and support staff are here to assist you with any inquiries regarding the platform or legal tools.</p>
 
-              <div className="contact-item"><FaEnvelope /> hetbhalani44@gmail.com</div>
-              <div className="contact-item"><FaPhone /> +91 79848 49841</div>
-              <div className="contact-item"><FaLocationDot /> Ahmedabad & Pune, India</div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: '#e0e0ff' }}>
-              <FaCircleCheck color="#19c37d" />
-              Response guaranteed within 24 hours.
-            </div>
-          </InfoSide>
-
-          <FormSide>
-            {submitted && (
-              <SuccessOverlay>
-                <FaCircleCheck />
-                <h3>Successfully Sent!</h3>
-                <p>Your message has been delivered to the platform administrators. We will get back to you shortly.</p>
-                <button className="btn-reset" onClick={resetForm}>Send another message</button>
-              </SuccessOverlay>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                <FormGroup>
-                  <label>Full Name</label>
-                  <input name="name" value={formData.name} onChange={handleChange} placeholder="First and Last Name" required />
-                </FormGroup>
-                <FormGroup>
-                  <label><FaUserTag size={12} /> User Role</label>
-                  <select name="role" value={formData.role} onChange={handleChange}>
-                    <option value="civilian">Civilian</option>
-                    <option value="law_student">Law Student</option>
-                    <option value="lawyer">Professional Lawyer</option>
-                  </select>
-                </FormGroup>
+                <div className="contact-item"><FaEnvelope /> hetbhalani44@gmail.com</div>
+                <div className="contact-item"><FaPhone /> +91 79848 49841</div>
+                <div className="contact-item"><FaLocationDot /> Ahmedabad & Pune, India</div>
               </div>
 
-              <FormGroup>
-                <label>Email Address</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" required />
-              </FormGroup>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.9rem', color: '#e0e0ff' }}>
+                <FaCircleCheck color="#19c37d" />
+                Response guaranteed within 24 hours.
+              </div>
+            </InfoSide>
 
-              <FormGroup>
-                <label><FaCircleInfo size={12} /> Subject</label>
-                <input name="subject" value={formData.subject} onChange={handleChange} placeholder="e.g., Feature Request, Account Access" required />
-              </FormGroup>
+            <FormSide>
+              {submitted && (
+                <SuccessOverlay>
+                  <FaCircleCheck />
+                  <h3>Successfully Sent!</h3>
+                  <p>Your message has been delivered to the platform administrators. We will get back to you shortly.</p>
+                  <button className="btn-reset" onClick={resetForm}>Send another message</button>
+                </SuccessOverlay>
+              )}
 
-              <FormGroup>
-                <label>Detailed Message</label>
-                <textarea name="message" value={formData.message} onChange={handleChange} required placeholder="Describe your inquiry in detail..." />
-              </FormGroup>
+              <form onSubmit={handleSubmit}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <FormGroup>
+                    <label>Full Name</label>
+                    <input name="name" value={formData.name} onChange={handleChange} placeholder="First and Last Name" required />
+                  </FormGroup>
+                  <FormGroup>
+                    <label><FaUserTag size={12} /> User Role</label>
+                    <select name="role" value={formData.role} onChange={handleChange}>
+                      <option value="civilian">Civilian</option>
+                      <option value="law_student">Law Student</option>
+                      <option value="lawyer">Professional Lawyer</option>
+                    </select>
+                  </FormGroup>
+                </div>
 
-              <SubmitBtn type="submit" disabled={loading}>
-                {loading ? <FaSpinner className="spin" /> : <FaPaperPlane />}
-                {loading ? 'Processing...' : 'Submit Inquiry'}
-              </SubmitBtn>
-            </form>
-          </FormSide>
-        </Box>
-      </Container>
-      <LandingFooter />
+                <FormGroup>
+                  <label>Email Address</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" required />
+                </FormGroup>
+
+                <FormGroup>
+                  <label><FaCircleInfo size={12} /> Issue Category</label>
+                  <select name="subject" value={formData.subject} onChange={handleChange} required>
+                    <option value="" disabled>Select a category</option>
+                    <option value="General Contact">General Contact</option>
+                    <option value="Technical Issue">Technical Issue</option>
+                    <option value="Report User">Report User</option>
+                    <option value="Feature Request">Feature Request</option>
+                    <option value="Feedback">Feedback</option>
+                  </select>
+                </FormGroup>
+
+                <FormGroup>
+                  <label>Detailed Message</label>
+                  <textarea name="message" value={formData.message} onChange={handleChange} required placeholder="Describe your inquiry in detail..." />
+                </FormGroup>
+
+                <SubmitBtn type="submit" disabled={loading}>
+                  {loading ? <FaSpinner className="spin" /> : <FaPaperPlane />}
+                  {loading ? 'Processing...' : 'Submit Inquiry'}
+                </SubmitBtn>
+              </form>
+            </FormSide>
+          </Box>
+        </Container>
+        <LandingFooter />
+      </ContentContainer>
       <style>{`.spin { animation: spin 1s linear infinite; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
     </PageWrapper>
   );

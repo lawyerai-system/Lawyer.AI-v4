@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { 
-    FaGavel, FaScaleUnbalanced, FaUserTie, FaUserGraduate, 
-    FaPaperPlane, FaXmark, FaRobot, FaCircleInfo, FaStar, 
+import {
+    FaGavel, FaScaleUnbalanced, FaUserTie, FaUserGraduate,
+    FaPaperPlane, FaXmark, FaRobot, FaCircleInfo, FaStar,
     FaBuildingColumns, FaShieldHalved, FaTriangleExclamation,
     FaFileContract, FaUserCheck, FaScaleBalanced, FaClockRotateLeft,
     FaChevronRight, FaArrowLeft, FaChartLine
@@ -170,6 +170,46 @@ const MessageBubble = styled.div`
     letter-spacing: 1px;
     color: ${props => props.$sender === 'User' ? 'rgba(255,255,255,0.8)' : 'var(--primary)'};
   }
+`;
+
+const DateSeparator = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+  position: relative;
+  width: 100%;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+  
+  span {
+    background: #161a26;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: #8e8ea0;
+    font-weight: 600;
+    z-index: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+`;
+
+const MessageTime = styled.div`
+  font-size: 0.65rem;
+  color: ${props => props.$user ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.4)'};
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  font-weight: 500;
 `;
 
 const JudgeCard = styled.div`
@@ -469,19 +509,26 @@ const MootCourtSimulator = () => {
         // Optimistic update
         setSession(prev => ({
             ...prev,
-            messages: [...prev.messages, { sender: 'User', content: currentMsg }]
+            messages: [...prev.messages, { sender: 'User', content: currentMsg, timestamp: new Date().toISOString() }]
         }));
 
         setTyping(true);
         try {
             const res = await api.post('/api/moot-court/message', {
                 sessionId: session._id,
-                message: currentMsg
+                message: currentMsg,
+                isObjection
             });
+
+            // The backend returns an array of messages
+            const newMessages = res.data.data.map(m => ({
+                ...m,
+                timestamp: m.timestamp || new Date().toISOString()
+            }));
 
             setSession(prev => ({
                 ...prev,
-                messages: [...prev.messages, ...res.data.data]
+                messages: [...prev.messages, ...newMessages]
             }));
         } catch (err) {
             console.error(err);
@@ -560,6 +607,21 @@ const MootCourtSimulator = () => {
     // Filter messages for panels
     const judgeMessages = session?.messages?.filter(m => m.sender === 'AI Judge') || [];
     const debateMessages = session?.messages?.filter(m => m.sender !== 'AI Judge') || [];
+
+    const formatTime = (date) => {
+        if (!date) return '';
+        return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const formatDateLabel = (date) => {
+        const d = new Date(date);
+        const today = new Date();
+        const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+
+        if (d.toDateString() === today.toDateString()) return 'Today';
+        if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+        return d.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+    };
 
     if (step === 'results') {
         return (
@@ -644,10 +706,10 @@ const MootCourtSimulator = () => {
                     ) : (
                         <div style={{ display: 'grid', gap: '1rem' }}>
                             {history.map((trial) => (
-                                <div key={trial._id} style={{ 
-                                    background: 'rgba(255,255,255,0.03)', 
-                                    border: '1px solid rgba(255,255,255,0.08)', 
-                                    padding: '1.5rem 2rem', 
+                                <div key={trial._id} style={{
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid rgba(255,255,255,0.08)',
+                                    padding: '1.5rem 2rem',
                                     borderRadius: '20px',
                                     display: 'grid',
                                     gridTemplateColumns: '2fr 1fr 1fr 1fr 120px',
@@ -672,13 +734,13 @@ const MootCourtSimulator = () => {
                                         <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block' }}>SCORE</span>
                                         <span style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.2rem' }}>{trial.evaluation.score}</span>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => fetchSessionDetails(trial._id)}
-                                        style={{ 
-                                            background: 'rgba(108, 93, 211, 0.1)', 
-                                            color: 'var(--primary)', 
-                                            border: 'none', 
-                                            padding: '0.75rem', 
+                                        style={{
+                                            background: 'rgba(108, 93, 211, 0.1)',
+                                            color: 'var(--primary)',
+                                            border: 'none',
+                                            padding: '0.75rem',
                                             borderRadius: '12px',
                                             cursor: 'pointer',
                                             display: 'flex',
@@ -717,18 +779,32 @@ const MootCourtSimulator = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 200px)' }}>
                         <PanelHeader><FaRobot /> Courtroom Transcript</PanelHeader>
                         <ChatWindow>
-                            {selectedHistorySession.messages.map((m, i) => (
-                                <MessageBubble key={i} $sender={m.sender === 'User' ? 'User' : 'AI'}>
-                                    <span className="sender-name">{m.sender}</span>
-                                    {m.content}
-                                </MessageBubble>
-                            ))}
+                            {selectedHistorySession.messages.map((m, i) => {
+                                const msgDate = m.timestamp ? new Date(m.timestamp) : new Date();
+                                const prevMsgDate = i > 0 ? (selectedHistorySession.messages[i - 1].timestamp ? new Date(selectedHistorySession.messages[i - 1].timestamp) : new Date()) : null;
+                                const showDateSeparator = !prevMsgDate || msgDate.toDateString() !== prevMsgDate.toDateString();
+
+                                return (
+                                    <React.Fragment key={i}>
+                                        {showDateSeparator && (
+                                            <DateSeparator>
+                                                <span>{formatDateLabel(msgDate)}</span>
+                                            </DateSeparator>
+                                        )}
+                                        <MessageBubble $sender={m.sender === 'User' ? 'User' : 'AI'}>
+                                            <span className="sender-name">{m.sender}</span>
+                                            {m.content}
+                                            <MessageTime $user={m.sender === 'User'}>{formatTime(m.timestamp || Date.now())}</MessageTime>
+                                        </MessageBubble>
+                                    </React.Fragment>
+                                );
+                            })}
                         </ChatWindow>
                     </div>
 
                     <div style={{ background: 'rgba(255, 255, 255, 0.01)', borderLeft: '1px solid rgba(255, 255, 255, 0.05)', overflowY: 'auto', padding: '1.5rem' }}>
                         <h3 style={{ fontSize: '0.9rem', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.6 }}>Trial Results</h3>
-                        
+
                         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                             <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(108, 93, 211, 0.1)', border: '4px solid var(--primary)', display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                                 <span style={{ fontSize: '2rem', fontWeight: 900 }}>{selectedHistorySession.evaluation.score}</span>
@@ -816,7 +892,7 @@ const MootCourtSimulator = () => {
                                 <h2 style={{ color: 'var(--primary)', margin: 0 }}>{session?.caseDetails?.title}</h2>
                                 <span style={{ padding: '0.4rem 0.8rem', background: 'rgba(108, 93, 211, 0.1)', color: 'var(--primary)', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>PREVIEW</span>
                             </div>
-                            
+
                             <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <FaFileContract size={14} /> Case Background
                             </h3>
@@ -900,12 +976,26 @@ const MootCourtSimulator = () => {
                         <DebateCenter>
                             <PanelHeader><FaRobot /> Courtroom Debate</PanelHeader>
                             <ChatWindow>
-                                {debateMessages.map((m, i) => (
-                                    <MessageBubble key={i} $sender={m.sender}>
-                                        <span className="sender-name">{m.sender}</span>
-                                        {m.content}
-                                    </MessageBubble>
-                                ))}
+                                {debateMessages.map((m, i) => {
+                                    const msgDate = m.timestamp ? new Date(m.timestamp) : new Date();
+                                    const prevMsgDate = i > 0 ? (debateMessages[i - 1].timestamp ? new Date(debateMessages[i - 1].timestamp) : new Date()) : null;
+                                    const showDateSeparator = !prevMsgDate || msgDate.toDateString() !== prevMsgDate.toDateString();
+
+                                    return (
+                                        <React.Fragment key={i}>
+                                            {showDateSeparator && (
+                                                <DateSeparator>
+                                                    <span>{formatDateLabel(msgDate)}</span>
+                                                </DateSeparator>
+                                            )}
+                                            <MessageBubble $sender={m.sender}>
+                                                <span className="sender-name">{m.sender}</span>
+                                                {m.content}
+                                                <MessageTime $user={m.sender === 'User'}>{formatTime(m.timestamp || Date.now())}</MessageTime>
+                                            </MessageBubble>
+                                        </React.Fragment>
+                                    );
+                                })}
                                 {typing && (
                                     <p style={{ fontStyle: 'italic', opacity: 0.4, fontSize: '0.85rem', paddingLeft: '1rem' }}>
                                         AI Counsel is preparing a counter-argument...
@@ -926,7 +1016,7 @@ const MootCourtSimulator = () => {
                                         <span>{e}</span>
                                     </EvidenceItem>
                                 ))}
-                                
+
                                 <h4 style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: '1rem', marginBottom: '0.5rem' }}>WITNESS LIST</h4>
                                 {session.caseDetails.witnesses.map((w, i) => (
                                     <EvidenceItem key={i}>
@@ -940,7 +1030,7 @@ const MootCourtSimulator = () => {
 
                     <ControlBar>
                         <InputRow>
-                            <TextArea 
+                            <TextArea
                                 placeholder="Clearly state your legal argument, cite IPC sections, or cross-examine witnesses..."
                                 value={userMessage}
                                 onChange={(e) => setUserMessage(e.target.value)}
@@ -961,7 +1051,7 @@ const MootCourtSimulator = () => {
                                     <FaXmark /> Conclude Trial
                                 </ActionButton>
                             </ButtonGroup>
-                            
+
                             <ActionButton $type="submit" onClick={() => handleSendMessage()} disabled={typing || !userMessage.trim()}>
                                 Submit Argument <FaPaperPlane size={14} />
                             </ActionButton>
@@ -991,13 +1081,13 @@ const MootCourtSimulator = () => {
                         textAlign: 'center',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
                     }}>
-                        <div style={{ 
-                            width: '60px', 
-                            height: '60px', 
-                            background: 'rgba(245, 101, 101, 0.1)', 
-                            borderRadius: '50%', 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <div style={{
+                            width: '60px',
+                            height: '60px',
+                            background: 'rgba(245, 101, 101, 0.1)',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
                             justifyContent: 'center',
                             margin: '0 auto 1.5rem',
                             color: '#f56565'
@@ -1009,13 +1099,13 @@ const MootCourtSimulator = () => {
                             Are you sure you want to end this simulation? You will receive your final performance evaluation from the Judge.
                         </p>
                         <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button 
+                            <button
                                 onClick={() => setShowConfirmModal(false)}
-                                style={{ 
-                                    flex: 1, 
-                                    padding: '1rem', 
-                                    borderRadius: '12px', 
-                                    background: 'rgba(255, 255, 255, 0.05)', 
+                                style={{
+                                    flex: 1,
+                                    padding: '1rem',
+                                    borderRadius: '12px',
+                                    background: 'rgba(255, 255, 255, 0.05)',
                                     border: '1px solid rgba(255, 255, 255, 0.1)',
                                     color: '#fff',
                                     fontWeight: '600',
@@ -1024,13 +1114,13 @@ const MootCourtSimulator = () => {
                             >
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 onClick={confirmConclude}
-                                style={{ 
-                                    flex: 1, 
-                                    padding: '1rem', 
-                                    borderRadius: '12px', 
-                                    background: 'var(--primary)', 
+                                style={{
+                                    flex: 1,
+                                    padding: '1rem',
+                                    borderRadius: '12px',
+                                    background: 'var(--primary)',
                                     border: 'none',
                                     color: '#fff',
                                     fontWeight: '600',

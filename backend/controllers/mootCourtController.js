@@ -219,12 +219,12 @@ exports.endSession = async (req, res) => {
 
 exports.getUserHistory = async (req, res) => {
     try {
-        const history = await MootCourtSession.find({ 
-            userId: req.user.id, 
-            status: 'completed' 
+        const history = await MootCourtSession.find({
+            userId: req.user.id,
+            status: 'completed'
         })
-        .select('caseDetails.title role difficulty createdAt evaluation.score')
-        .sort({ createdAt: -1 });
+            .select('caseDetails.title role difficulty createdAt evaluation.score')
+            .sort({ createdAt: -1 });
 
         res.status(200).json({
             status: 'success',
@@ -238,9 +238,9 @@ exports.getUserHistory = async (req, res) => {
 
 exports.getSession = async (req, res) => {
     try {
-        const session = await MootCourtSession.findOne({ 
-            _id: req.params.id, 
-            userId: req.user.id 
+        const session = await MootCourtSession.findOne({
+            _id: req.params.id,
+            userId: req.user.id
         });
 
         if (!session) {
@@ -259,12 +259,12 @@ exports.getSession = async (req, res) => {
 exports.analyzePerformance = async (req, res) => {
     const startTime = Date.now();
     try {
-        const history = await MootCourtSession.find({ 
-            userId: req.user.id, 
-            status: 'completed' 
+        const history = await MootCourtSession.find({
+            userId: req.user.id,
+            status: 'completed'
         })
-        .sort({ createdAt: -1 })
-        .limit(5);
+            .sort({ createdAt: -1 })
+            .limit(5);
 
         if (history.length === 0) {
             return res.status(400).json({ status: 'fail', message: 'No completed trials found to analyze.' });

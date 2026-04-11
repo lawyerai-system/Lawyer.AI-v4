@@ -58,141 +58,149 @@ import RoleRedirect from './components/Auth/RoleRedirect';
 import { Toaster } from 'react-hot-toast';
 import ScrollToTop from './components/Common/ScrollToTop';
 import LandingPage from './pages/Landing/LandingPage';
+import MaintenanceBanner from './components/Dashboard/MaintenanceBanner';
+import MaintenanceWatcher from './components/Common/MaintenanceWatcher';
+import MaintenanceModal from './components/Common/MaintenanceModal';
 
 function App() {
   return (
     <AuthProvider>
-    <Router>
-      <Toaster position="top-right" toastOptions={{ duration: 4000, style: { background: '#333', color: '#fff' } }} />
-      <SettingsProvider>
-        <ScrollToTop />
-        <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/auth" element={<LoginSignupPage />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/login-redirect" element={<RoleRedirect />} />
-        <Route path="/features" element={<FeaturesPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+      <Router>
+        <MaintenanceModal />
+        <Toaster position="top-right" toastOptions={{ duration: 4000, style: { background: '#333', color: '#fff' } }} />
+        <SettingsProvider>
+          <MaintenanceBanner />
+          <MaintenanceWatcher />
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<LoginSignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/login-redirect" element={<RoleRedirect />} />
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
-        <Route path="/docs" element={<DocumentationPage />} />
-        <Route path="/help" element={<HelpCenterPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/docs" element={<DocumentationPage />} />
+            <Route path="/help" element={<HelpCenterPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
 
-        {/* Legacy /dashboard redirector */}
-        <Route path="/dashboard/*" element={<RoleRedirect />} />
+            {/* Legacy /dashboard redirector */}
+            <Route path="/dashboard/*" element={<RoleRedirect />} />
 
-        {/* Lawyer Dashboard */}
-        <Route path="/lawyer" element={
-          <RoleProtectedRoute allowedRoles={['lawyer']}>
-            <SocketProvider>
-              <ChatProvider>
-                <DashboardLayout />
-              </ChatProvider>
-            </SocketProvider>
-          </RoleProtectedRoute>
-        }>
-          <Route index element={<RoleRedirect />} />
-          <Route path="dashboard" element={<DashboardHome />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="blog" element={<BlogPage />} />
-          <Route path="blog/create" element={<BlogCreate />} />
-          <Route path="blog/edit/:id" element={<BlogEdit />} />
-          <Route path="blog/:id" element={<BlogDetail />} />
-          <Route path="courtroom" element={<CourtroomPage />} />
-          <Route path="ipc" element={<IPCPage />} />
-          <Route path="doc-analyzer" element={<DocumentAnalyzer />} />
-          <Route path="strategy-generator" element={<LegalStrategyGenerator />} />
-          <Route path="moot-court" element={<MootCourtSimulator />} />
-          <Route path="case-library" element={<CaseLibrary />} />
-          <Route path="case-library/upload" element={<UploadCase />} />
-          <Route path="case-library/:id" element={<CaseDetails />} />
-          <Route path="outcome-predictor" element={<CasePredictor />} />
-          <Route path="judicial-simulation" element={<CourtSimulation />} />
-          <Route path="case-builder" element={<AICaseBuilder />} />
-          <Route path="research" element={<ResearchHub />} />
-          <Route path="practice" element={<PracticeHub />} />
-          <Route path="academy" element={<AcademyHub />} />
-          <Route path="community" element={<CommunityHub />} />
-        </Route>
+            {/* Lawyer Dashboard */}
+            <Route path="/lawyer" element={
+              <RoleProtectedRoute allowedRoles={['lawyer']}>
+                <SocketProvider>
+                  <ChatProvider>
+                    <DashboardLayout />
+                  </ChatProvider>
+                </SocketProvider>
+              </RoleProtectedRoute>
+            }>
+              <Route index element={<RoleRedirect />} />
+              <Route path="dashboard" element={<DashboardHome />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="chat" element={<ChatPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/create" element={<BlogCreate />} />
+              <Route path="blog/edit/:id" element={<BlogEdit />} />
+              <Route path="blog/:id" element={<BlogDetail />} />
+              <Route path="courtroom" element={<CourtroomPage />} />
+              <Route path="ipc" element={<IPCPage />} />
+              <Route path="doc-analyzer" element={<DocumentAnalyzer />} />
+              <Route path="strategy-generator" element={<LegalStrategyGenerator />} />
+              <Route path="moot-court" element={<MootCourtSimulator />} />
+              <Route path="case-library" element={<CaseLibrary />} />
+              <Route path="case-library/upload" element={<UploadCase />} />
+              <Route path="case-library/:id" element={<CaseDetails />} />
+              <Route path="outcome-predictor" element={<CasePredictor />} />
+              <Route path="judicial-simulation" element={<CourtSimulation />} />
+              <Route path="case-builder" element={<AICaseBuilder />} />
+              <Route path="research" element={<ResearchHub />} />
+              <Route path="practice" element={<PracticeHub />} />
+              <Route path="academy" element={<AcademyHub />} />
+              <Route path="community" element={<CommunityHub />} />
+            </Route>
 
-        {/* Student Dashboard */}
-        <Route path="/student" element={
-          <RoleProtectedRoute allowedRoles={['law_student']}>
-            <SocketProvider>
-              <ChatProvider>
-                <DashboardLayout />
-              </ChatProvider>
-            </SocketProvider>
-          </RoleProtectedRoute>
-        }>
-          <Route index element={<RoleRedirect />} />
-          <Route path="dashboard" element={<DashboardHome />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="blog" element={<BlogPage />} />
-          <Route path="blog/:id" element={<BlogDetail />} />
-          <Route path="ipc" element={<IPCPage />} />
-          <Route path="doc-analyzer" element={<DocumentAnalyzer />} />
-          <Route path="strategy-generator" element={<LegalStrategyGenerator />} />
-          <Route path="moot-court" element={<MootCourtSimulator />} />
-          <Route path="case-library" element={<CaseLibrary />} />
-          <Route path="case-library/upload" element={<UploadCase />} />
-          <Route path="case-library/:id" element={<CaseDetails />} />
-          <Route path="case-builder" element={<AICaseBuilder />} />
-          <Route path="research" element={<ResearchHub />} />
-          <Route path="academy" element={<AcademyHub />} />
-          <Route path="community" element={<CommunityHub />} />
-        </Route>
+            {/* Student Dashboard */}
+            <Route path="/student" element={
+              <RoleProtectedRoute allowedRoles={['law_student']}>
+                <SocketProvider>
+                  <ChatProvider>
+                    <DashboardLayout />
+                  </ChatProvider>
+                </SocketProvider>
+              </RoleProtectedRoute>
+            }>
+              <Route index element={<RoleRedirect />} />
+              <Route path="dashboard" element={<DashboardHome />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="chat" element={<ChatPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/:id" element={<BlogDetail />} />
+              <Route path="ipc" element={<IPCPage />} />
+              <Route path="doc-analyzer" element={<DocumentAnalyzer />} />
+              <Route path="strategy-generator" element={<LegalStrategyGenerator />} />
+              <Route path="moot-court" element={<MootCourtSimulator />} />
+              <Route path="case-library" element={<CaseLibrary />} />
+              <Route path="case-library/upload" element={<UploadCase />} />
+              <Route path="case-library/:id" element={<CaseDetails />} />
+              <Route path="case-builder" element={<AICaseBuilder />} />
+              <Route path="research" element={<ResearchHub />} />
+              <Route path="academy" element={<AcademyHub />} />
+              <Route path="community" element={<CommunityHub />} />
+            </Route>
 
-        {/* Civilian Dashboard */}
-        <Route path="/civilian" element={
-          <RoleProtectedRoute allowedRoles={['civilian']}>
-            <SocketProvider>
-              <ChatProvider>
-                <DashboardLayout />
-              </ChatProvider>
-            </SocketProvider>
-          </RoleProtectedRoute>
-        }>
-          <Route index element={<RoleRedirect />} />
-          <Route path="dashboard" element={<DashboardHome />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="ipc" element={<IPCPage />} />
-          <Route path="research" element={<ResearchHub />} />
-          <Route path="community" element={<CommunityHub />} />
-        </Route>
+            {/* Civilian Dashboard */}
+            <Route path="/civilian" element={
+              <RoleProtectedRoute allowedRoles={['civilian']}>
+                <SocketProvider>
+                  <ChatProvider>
+                    <DashboardLayout />
+                  </ChatProvider>
+                </SocketProvider>
+              </RoleProtectedRoute>
+            }>
+              <Route index element={<RoleRedirect />} />
+              <Route path="dashboard" element={<DashboardHome />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="chat" element={<ChatPage />} />
+              <Route path="ipc" element={<IPCPage />} />
+              <Route path="research" element={<ResearchHub />} />
+              <Route path="community" element={<CommunityHub />} />
+            </Route>
 
-        {/* Admin Dashboard */}
-        <Route path="/admin" element={
-          <ProtectedAdminRoute>
-            <AdminLayout />
-          </ProtectedAdminRoute>
-        }>
-          <Route index element={<AdminDashboard />} />
-          <Route path="users" element={<UserManagement />} />
-          <Route path="lawyers" element={<LawyerManagement />} />
-          <Route path="blogs" element={<BlogManagement />} />
-          <Route path="contacts" element={<ContactManagement />} />
-          <Route path="cases" element={<CaseManagement />} />
-          <Route path="ipc" element={<IPCManagement />} />
-          <Route path="moots" element={<MootManagement />} />
-          <Route path="rooms" element={<RoomManagement />} />
-          <Route path="ai-monitor" element={<AIMonitoring />} />
-          <Route path="announcements" element={<AnnouncementManagement />} />
-          <Route path="settings" element={<SettingsManagement />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
+            {/* Admin Dashboard */}
+            <Route path="/admin" element={
+              <ProtectedAdminRoute>
+                <SocketProvider>
+                  <AdminLayout />
+                </SocketProvider>
+              </ProtectedAdminRoute>
+            }>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="lawyers" element={<LawyerManagement />} />
+              <Route path="blogs" element={<BlogManagement />} />
+              <Route path="contacts" element={<ContactManagement />} />
+              <Route path="cases" element={<CaseManagement />} />
+              <Route path="ipc" element={<IPCManagement />} />
+              <Route path="moots" element={<MootManagement />} />
+              <Route path="rooms" element={<RoomManagement />} />
+              <Route path="ai-monitoring" element={<AIMonitoring />} />
+              <Route path="announcements" element={<AnnouncementManagement />} />
+              <Route path="settings" element={<SettingsManagement />} />
+              <Route path="profile" element={<ProfilePage />} />
+            </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      </SettingsProvider>
-    </Router>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </SettingsProvider>
+      </Router>
     </AuthProvider>
   );
 }

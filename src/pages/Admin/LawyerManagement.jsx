@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
 import ConfirmModal from '../../components/Common/ConfirmModal';
-import { 
-    FaUserCheck, FaUserTimes, FaQuestionCircle, FaSearch, 
+import {
+    FaUserCheck, FaUserTimes, FaQuestionCircle, FaSearch,
     FaFilter, FaIdCard, FaGavel, FaEnvelope, FaChevronRight,
     FaRegAddressCard, FaInfoCircle, FaCheckCircle, FaExclamationCircle
 } from 'react-icons/fa';
@@ -11,80 +11,123 @@ import {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: 1rem;
+
+  @media (min-width: 640px) {
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1.5rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const TitleSection = styled.div`
   h2 {
     color: var(--text-main);
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 800;
+    @media (min-width: 640px) {
+      font-size: 1.8rem;
+    }
   }
   p {
     color: var(--text-secondary);
     margin: 0.5rem 0 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    @media (min-width: 640px) {
+      font-size: 0.9rem;
+    }
   }
 `;
 
 const TabContainer = styled.div`
   display: flex;
-  gap: 1.5rem;
+  gap: 0.5rem;
   border-bottom: 2px solid var(--border);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  
+  &::-webkit-scrollbar { display: none; }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  @media (min-width: 640px) {
+    gap: 1.5rem;
+    padding-bottom: 0.5rem;
+  }
 `;
 
 const Tab = styled.button`
   background: none;
   border: none;
   color: ${props => props.active ? 'var(--primary)' : 'var(--text-secondary)'};
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 0.5rem;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   cursor: pointer;
   position: relative;
   transition: all 0.3s;
+  flex-shrink: 0;
+
+  @media (min-width: 640px) {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
 
   &::after {
     content: '';
     position: absolute;
-    bottom: -0.6rem;
+    bottom: -2px;
     left: 0;
     width: 100%;
     height: 3px;
     background: var(--primary);
     transform: scaleX(${props => props.active ? 1 : 0});
     transition: transform 0.3s;
+    
+    @media (min-width: 640px) {
+      bottom: -0.6rem;
+    }
   }
 
   &:hover { color: var(--primary); }
 
   .count {
     background: ${props => props.active ? 'rgba(108, 93, 211, 0.2)' : 'rgba(255,255,255,0.05)'};
-    padding: 0.2rem 0.5rem;
+    padding: 0.1rem 0.4rem;
     border-radius: 6px;
-    font-size: 0.75rem;
-    margin-left: 0.5rem;
+    font-size: 0.65rem;
+    margin-left: 0.3rem;
+    
+    @media (min-width: 640px) {
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
+    }
   }
 `;
 
 const ContentGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 
-  @media (max-width: 1100px) {
-    grid-template-columns: 1fr;
+  @media (min-width: 1100px) {
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
   }
 `;
 
@@ -99,16 +142,28 @@ const Panel = styled.div`
 `;
 
 const ListHeader = styled.div`
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-bottom: 1px solid var(--border);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (min-width: 640px) {
+    padding: 1.5rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const SearchInput = styled.div`
   position: relative;
-  width: 250px;
+  width: 100%;
+  
+  @media (min-width: 640px) {
+    width: 250px;
+  }
+
   input {
     width: 100%;
     padding: 0.6rem 1rem 0.6rem 2.5rem;
@@ -123,19 +178,25 @@ const SearchInput = styled.div`
 `;
 
 const CardList = styled.div`
-  height: 600px;
+  height: 400px;
   overflow-y: auto;
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.8rem;
+
+  @media (min-width: 640px) {
+    height: 600px;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
 
   &::-webkit-scrollbar { width: 5px; }
   &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 `;
 
 const LawyerCard = styled.div`
-  padding: 1.2rem;
+  padding: 1rem;
   background: ${props => props.active ? 'rgba(108, 93, 211, 0.1)' : 'rgba(255, 255, 255, 0.02)'};
   border: 1px solid ${props => props.active ? 'var(--primary)' : 'var(--border)'};
   border-radius: 16px;
@@ -236,13 +297,13 @@ const ActionBtn = styled.button`
   border: none;
 
   ${props => {
-    switch (props.variant) {
-      case 'success': return 'background: #10b981; color: white; &:hover { background: #059669; }';
-      case 'danger': return 'background: #ef4444; color: white; &:hover { background: #dc2626; }';
-      case 'warning': return 'background: #f59e0b; color: white; &:hover { background: #d97706; }';
-      default: return 'background: rgba(255,255,255,0.1); color: white; &:hover { background: rgba(255,255,255,0.2); }';
-    }
-  }}
+        switch (props.variant) {
+            case 'success': return 'background: #10b981; color: white; &:hover { background: #059669; }';
+            case 'danger': return 'background: #ef4444; color: white; &:hover { background: #dc2626; }';
+            case 'warning': return 'background: #f59e0b; color: white; &:hover { background: #d97706; }';
+            default: return 'background: rgba(255,255,255,0.1); color: white; &:hover { background: rgba(255,255,255,0.2); }';
+        }
+    }}
 
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
@@ -275,7 +336,7 @@ const LawyerManagement = () => {
         fetchLawyers();
     }, [fetchLawyers]);
 
-    const filteredLawyers = lawyers.filter(l => 
+    const filteredLawyers = lawyers.filter(l =>
         (l.verificationStatus === activeTab || (!l.verificationStatus && activeTab === 'PENDING')) &&
         (l.name.toLowerCase().includes(search.toLowerCase()) || l.email.toLowerCase().includes(search.toLowerCase()))
     );
@@ -335,28 +396,28 @@ const LawyerManagement = () => {
                         <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Requests List</h3>
                         <SearchInput>
                             <FaSearch />
-                            <input 
-                                placeholder="Search Name/Email..." 
+                            <input
+                                placeholder="Search Name/Email..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </SearchInput>
                     </ListHeader>
                     <CardList>
-                        {loading ? <p>Scanning database...</p> : 
-                        filteredLawyers.map(l => (
-                            <LawyerCard 
-                                key={l._id} 
-                                active={selectedLawyer?._id === l._id}
-                                onClick={() => setSelectedLawyer(l)}
-                            >
-                                <div className="info">
-                                    <h4>{l.name}</h4>
-                                    <p>{l.specialization || 'General Practice'}</p>
-                                </div>
-                                <FaChevronRight opacity={0.3} />
-                            </LawyerCard>
-                        ))}
+                        {loading ? <p>Scanning database...</p> :
+                            filteredLawyers.map(l => (
+                                <LawyerCard
+                                    key={l._id}
+                                    active={selectedLawyer?._id === l._id}
+                                    onClick={() => setSelectedLawyer(l)}
+                                >
+                                    <div className="info">
+                                        <h4>{l.name}</h4>
+                                        <p>{l.specialization || 'General Practice'}</p>
+                                    </div>
+                                    <FaChevronRight opacity={0.3} />
+                                </LawyerCard>
+                            ))}
                         {filteredLawyers.length === 0 && !loading && (
                             <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
                                 No applications in this category.
@@ -407,9 +468,9 @@ const LawyerManagement = () => {
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary)', marginBottom: '10px' }}>
                                         ADMIN MODERATION REMARKS
                                     </label>
-                                    <TextArea 
-                                        rows="4" 
-                                        placeholder="Enter reason for rejection or details about missing documents..." 
+                                    <TextArea
+                                        rows="4"
+                                        placeholder="Enter reason for rejection or details about missing documents..."
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
                                     />
@@ -431,7 +492,7 @@ const LawyerManagement = () => {
                 </Panel>
             </ContentGrid>
 
-            <ConfirmModal 
+            <ConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal({ isOpen: false, type: '', data: null })}
                 onConfirm={() => handleUpdateStatus('APPROVED')}

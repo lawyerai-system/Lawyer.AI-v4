@@ -10,12 +10,13 @@ export const SettingsProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Initial fetch on mount
     fetchSettings();
   }, []);
 
   const fetchSettings = async () => {
     try {
-      const res = await api.get('/api/settings');
+      const res = await api.get('/api/admin/settings');
       if (res.data.success) {
         setSettings(res.data.data);
       }
@@ -26,13 +27,15 @@ export const SettingsProvider = ({ children }) => {
     }
   };
 
+  const isMaintenanceMode = settings?.isMaintenanceMode || false;
+
   const isFeatureEnabled = (featureName) => {
-    if (!settings) return true; // Default to true while loading
-    return settings.features[featureName] !== false;
+    if (!settings) return true;
+    return settings.general?.features?.[featureName] !== false;
   };
 
   return (
-    <SettingsContext.Provider value={{ settings, loading, isFeatureEnabled, refreshSettings: fetchSettings }}>
+    <SettingsContext.Provider value={{ settings, isMaintenanceMode, loading, isFeatureEnabled, refreshSettings: fetchSettings }}>
       {children}
     </SettingsContext.Provider>
   );

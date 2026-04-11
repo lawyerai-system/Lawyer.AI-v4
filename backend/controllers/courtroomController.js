@@ -96,6 +96,13 @@ exports.getUserContacts = async (req, res) => {
             })
         );
 
+        // Sort by latest activity
+        contactWithMessages.sort((a, b) => {
+            const timeA = new Date(a.latestMessageUpdatedAt || 0).getTime();
+            const timeB = new Date(b.latestMessageUpdatedAt || 0).getTime();
+            return timeB - timeA;
+        });
+
         return res.status(200).json({ data: contactWithMessages });
     } catch (err) {
         return res.status(404).json({ message: err.message });
@@ -226,6 +233,47 @@ exports.toggleMessagePin = async (req, res) => {
         await message.save();
 
         res.json({ status: 'success', data: message });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.editMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { message: newMessage } = req.body;
+        const { userId } = req.params;
+
+        const message = await Message.findById(messageId);
+        if (!message) return res.status(404).json({ message: 'Message not found' });
+
+        if (message.sender.toString() !== userId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        message.message = newMessage;
+        await message.save();
+
+        res.json({ status: 'success', data: message });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.deleteMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { userId } = req.params;
+
+        const message = await Message.findById(messageId);
+        if (!message) return res.status(404).json({ message: 'Message not found' });
+
+        if (message.sender.toString() !== userId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        await Message.findByIdAndDelete(messageId);
+        res.json({ status: 'success', message: 'Message deleted' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

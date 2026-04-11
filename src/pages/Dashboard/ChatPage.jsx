@@ -126,6 +126,7 @@ const TextBlock = styled.div`
   line-height: 1.6;
   color: #ececf1;
   overflow-wrap: break-word;
+  position: relative;
 
   /* Markdown Styles */
   p { margin-bottom: 1rem; &:last-child { margin-bottom: 0; } }
@@ -144,6 +145,45 @@ const TextBlock = styled.div`
   }
   ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
   li { margin-bottom: 0.5rem; }
+`;
+
+const DateSeparator = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+  
+  span {
+    background: #202123;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: #8e8ea0;
+    font-weight: 600;
+    z-index: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+`;
+
+const MessageTime = styled.div`
+  font-size: 0.65rem;
+  color: ${props => props.$user ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.4)'};
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  font-weight: 500;
 `;
 
 const SectionBadge = styled.a`
@@ -506,6 +546,13 @@ const ChatPage = () => {
   const [selectedSection, setSelectedSection] = useState(null); // Data for modal
   const [loadingSection, setLoadingSection] = useState(false);
 
+  const suggestions = [
+    { title: "Explain a Law", text: "Explain the simple meaning of IPC Section 302." },
+    { title: "Legal Procedure", text: "What is the process of getting bail in India?" },
+    { title: "Document Review", text: "What are the essential elements of a Rent Agreement?" },
+    { title: "Consumer Rights", text: "How can I file a complaint in Consumer Court?" }
+  ];
+
   const resizeInput = () => {
     if (inputRef.current) {
       inputRef.current.style.height = 'auto'; // Reset
@@ -592,7 +639,7 @@ const ChatPage = () => {
     if (!val.trim()) return;
     const userMsg = val;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    setMessages(prev => [...prev, { role: 'user', content: userMsg, timestamp: new Date().toISOString() }]);
     setLoading(true);
 
     try {
@@ -609,10 +656,12 @@ const ChatPage = () => {
       }
 
       const botContent = (responseData && responseData.response) ? responseData.response : "Received empty response.";
-      setMessages(prev => [...prev, { role: 'bot', content: botContent }]);
+      setMessages(prev => [...prev, { role: 'bot', content: botContent, timestamp: new Date().toISOString() }]);
 
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'bot', content: 'Sorry, I encountered an error. Please try again.' }]);
+      console.error("Chat Send Error:", err);
+      const errorMsg = err.response?.data?.message || 'Sorry, I encountered an error. Please try again.';
+      setMessages(prev => [...prev, { role: 'bot', content: errorMsg }]);
     } finally {
       setLoading(false);
     }
@@ -635,12 +684,20 @@ const ChatPage = () => {
     setItemToDelete(null);
   };
 
-  const suggestions = [
-    { icon: <FaGavel />, title: "Explain Case Law", text: "Summarize the Kesavananda Bharati case." },
-    { icon: <FaFileContract />, title: "Draft Agreement", text: "Draft a simple freelance consulting agreement." },
-    { icon: <FaScaleUnbalanced />, title: "Legal Advice", text: "What are the rights of a tenant in India?" },
-    { icon: <FaLightbulb />, title: "IPC Section", text: "Explain Section 420 of IPC with examples." }
-  ];
+  const formatTime = (date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDateLabel = (date) => {
+    const d = new Date(date);
+    const today = new Date();
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+
+    if (d.toDateString() === today.toDateString()) return 'Today';
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return d.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+  };
 
   return (
     <ChatPageLayout>
@@ -681,10 +738,10 @@ const ChatPage = () => {
           <div className="header-top">
             <h3>History</h3>
             <CloseSidebarBtn onClick={() => setIsSidebarOpen(false)}>
-                <FaXmark size={18} />
+              <FaXmark size={18} />
             </CloseSidebarBtn>
           </div>
-          
+
           <div className="action-btns">
             <NewChatBtn onClick={handleNewChat}>
               <FaPlus size={14} />
@@ -701,19 +758,19 @@ const ChatPage = () => {
                 <span>{s.title}</span>
               </div>
               <DeleteBtn className="delete-btn" onClick={(e) => onDeleteClick(e, s)}>
-                  <FaTrash size={12} />
+                <FaTrash size={12} />
               </DeleteBtn>
             </HistoryItem>
           ))}
           {sessions.length === 0 && (
             <div style={{ padding: '2rem 1rem', color: '#8e8ea0', fontSize: '0.8rem', textAlign: 'center' }}>
-                <FaRobot size={24} style={{ display: 'block', margin: '0 auto 1rem', opacity: 0.2 }} />
-                No chat history found.
+              <FaRobot size={24} style={{ display: 'block', margin: '0 auto 1rem', opacity: 0.2 }} />
+              No chat history found.
             </div>
           )}
         </HistoryList>
       </Sidebar>
-<style>{`
+      <style>{`
   .fa-spin {
     animation: spin 2s linear infinite;
   }
@@ -763,49 +820,63 @@ const ChatPage = () => {
             </WelcomeScreen>
           )}
 
-          {messages.map((msg, i) => (
-            <MessageRow key={i} $isBot={msg.role === 'bot'}>
-              <MessageContent>
-                <Avatar $isBot={msg.role === 'bot'}>
-                  {msg.role === 'bot' ? <FaRobot size={16} /> : (
-                    <UserAvatar 
-                      src={user?.profilePicture || user?.profileImage} 
-                      name={user?.name} 
-                      size="30px" 
-                    />
-                  )}
-                </Avatar>
-                <TextBlock>
-                  {msg.role === 'bot' ? (
-                    <ReactMarkdown
-                      components={{
-                        a: ({ node, ...props }) => {
-                          if (props.href && props.href.startsWith('#section-')) {
-                            return (
-                              <SectionBadge
-                                href={props.href}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleSectionClick(props.href);
-                                }}
-                              >
-                                {props.children}
-                              </SectionBadge>
-                            );
-                          }
-                          return <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }} />;
-                        }
-                      }}
-                    >
-                      {msg.content || ''}
-                    </ReactMarkdown>
-                  ) : (
-                    msg.content || ''
-                  )}
-                </TextBlock>
-              </MessageContent>
-            </MessageRow>
-          ))}
+          {messages.map((msg, i) => {
+            const msgDate = msg.timestamp ? new Date(msg.timestamp) : new Date();
+            const prevMsgDate = i > 0 ? (messages[i - 1].timestamp ? new Date(messages[i - 1].timestamp) : new Date()) : null;
+            const showDateSeparator = !prevMsgDate || msgDate.toDateString() !== prevMsgDate.toDateString();
+
+            return (
+              <React.Fragment key={i}>
+                {showDateSeparator && (
+                  <DateSeparator>
+                    <span>{formatDateLabel(msgDate)}</span>
+                  </DateSeparator>
+                )}
+                <MessageRow $isBot={msg.role === 'bot'}>
+                  <MessageContent>
+                    <Avatar $isBot={msg.role === 'bot'}>
+                      {msg.role === 'bot' ? <FaRobot size={16} /> : (
+                        <UserAvatar
+                          src={user?.profilePicture || user?.profileImage}
+                          name={user?.name}
+                          size="30px"
+                        />
+                      )}
+                    </Avatar>
+                    <TextBlock>
+                      {msg.role === 'bot' ? (
+                        <ReactMarkdown
+                          components={{
+                            a: ({ node, ...props }) => {
+                              if (props.href && props.href.startsWith('#section-')) {
+                                return (
+                                  <SectionBadge
+                                    href={props.href}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleSectionClick(props.href);
+                                    }}
+                                  >
+                                    {props.children}
+                                  </SectionBadge>
+                                );
+                              }
+                              return <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }} />;
+                            }
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      ) : (
+                        <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+                      )}
+                      <MessageTime $user={msg.role === 'user'}>{formatTime(msg.timestamp || Date.now())}</MessageTime>
+                    </TextBlock>
+                  </MessageContent>
+                </MessageRow>
+              </React.Fragment>
+            );
+          })}
 
           {loading && (
             <MessageRow $isBot={true}>
@@ -820,7 +891,7 @@ const ChatPage = () => {
             </MessageRow>
           )}
           <div ref={messagesEndRef} />
-        </MessagesContainer>
+        </MessagesContainer >
 
         <InputArea>
           <InputWrapper>
@@ -843,8 +914,8 @@ const ChatPage = () => {
           </Disclaimer>
         </InputArea>
 
-      </MainChatArea>
-    </ChatPageLayout>
+      </MainChatArea >
+    </ChatPageLayout >
   );
 };
 

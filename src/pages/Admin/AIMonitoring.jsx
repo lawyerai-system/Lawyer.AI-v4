@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import api from '../../utils/axios';
-import { 
-    FaRobot, FaChartLine, FaExclamationTriangle, FaClock, 
-    FaCheckCircle, FaExclamationCircle, FaSearch, FaFilter 
+import {
+    FaRobot, FaChartLine, FaExclamationTriangle, FaClock,
+    FaCheckCircle, FaExclamationCircle, FaSearch, FaFilter
 } from 'react-icons/fa';
 import {
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie
 } from 'recharts';
 
@@ -18,8 +18,12 @@ const rotate = keyframes`
 `;
 
 const Container = styled.div`
-    padding: 2rem;
+    padding: 1rem;
     animation: fadeIn 0.5s ease-out;
+
+    @media (min-width: 640px) {
+        padding: 2rem;
+    }
 
     .spinner {
         width: 40px;
@@ -34,20 +38,36 @@ const Container = styled.div`
 const Header = styled.div`
     margin-bottom: 2rem;
     h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
         color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 1rem;
+
+        @media (min-width: 640px) {
+            font-size: 2rem;
+        }
     }
-    p { color: var(--text-secondary); }
+    p { 
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
 `;
 
 const StatsGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
     margin-bottom: 2rem;
+
+    @media (min-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
 `;
 
 const StatCard = styled.div`
@@ -55,34 +75,53 @@ const StatCard = styled.div`
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     align-items: center;
     gap: 1rem;
 
+    @media (min-width: 640px) {
+        padding: 1.5rem;
+    }
+
     .icon {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         border-radius: 12px;
         background: ${props => props.color}20;
         color: ${props => props.color};
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+
+        @media (min-width: 640px) {
+            width: 48px;
+            height: 48px;
+            font-size: 1.5rem;
+        }
     }
 
     .info {
-        h3 { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
-        p { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+        h3 { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.1rem; }
+        p { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+
+        @media (min-width: 640px) {
+            h3 { font-size: 0.9rem; }
+            p { font-size: 1.5rem; }
+        }
     }
 `;
 
 const ChartsGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     margin-bottom: 2rem;
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
 `;
 
 const Card = styled.div`
@@ -90,14 +129,34 @@ const Card = styled.div`
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    padding: 1.5rem;
+    padding: 1.25rem;
+
+    @media (min-width: 640px) {
+        padding: 1.5rem;
+    }
 
     h2 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
         gap: 0.75rem;
+
+        @media (min-width: 640px) {
+            font-size: 1.2rem;
+        }
+    }
+`;
+
+const TableWrapper = styled.div`
+    overflow-x: auto;
+    width: 100%;
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
     }
 `;
 
@@ -105,6 +164,7 @@ const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    min-width: 600px;
 
     th, td {
         padding: 1rem;
@@ -180,11 +240,11 @@ const AIMonitoring = () => {
         </Container>
     );
 
-    const { 
-        dailyUsage = [], 
-        featureDistribution = [], 
-        performance = { avgLatency: 0, totalRequests: 0, errorRate: 0 }, 
-        errorLogs = [] 
+    const {
+        dailyUsage = [],
+        featureDistribution = [],
+        performance = { avgLatency: 0, totalRequests: 0, errorRate: 0 },
+        errorLogs = []
     } = data;
 
     return (
@@ -233,14 +293,14 @@ const AIMonitoring = () => {
                             <AreaChart data={dailyUsage}>
                                 <defs>
                                     <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#6c5dd3" stopOpacity={0.3}/>
-                                        <stop offset="95%" stopColor="#6c5dd3" stopOpacity={0}/>
+                                        <stop offset="5%" stopColor="#6c5dd3" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#6c5dd3" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                                 <XAxis dataKey="_id" stroke="var(--text-secondary)" fontSize={12} />
                                 <YAxis stroke="var(--text-secondary)" fontSize={12} />
-                                <Tooltip 
+                                <Tooltip
                                     contentStyle={{ background: '#1a1d24', border: 'none', borderRadius: '12px' }}
                                     itemStyle={{ color: '#fff' }}
                                 />
@@ -259,7 +319,7 @@ const AIMonitoring = () => {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                                 <XAxis dataKey="_id" stroke="var(--text-secondary)" fontSize={10} interval={0} />
                                 <YAxis stroke="var(--text-secondary)" fontSize={12} label={{ value: 'ms', angle: -90, position: 'insideLeft' }} />
-                                <Tooltip 
+                                <Tooltip
                                     contentStyle={{ background: '#1a1d24', border: 'none', borderRadius: '12px' }}
                                 />
                                 <Bar dataKey="avgResponseTime" name="Avg Latency (ms)" radius={[6, 6, 0, 0]}>
@@ -291,8 +351,8 @@ const AIMonitoring = () => {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip 
-                                     contentStyle={{ background: '#1a1d24', border: 'none', borderRadius: '12px' }}
+                                <Tooltip
+                                    contentStyle={{ background: '#1a1d24', border: 'none', borderRadius: '12px' }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -302,28 +362,30 @@ const AIMonitoring = () => {
 
             <Card>
                 <h2><FaExclamationCircle /> Recent AI Error Logs</h2>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Error Message</th>
-                            <th>User</th>
-                            <th>Timestamp</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {errorLogs.map((log, i) => (
-                            <tr key={i}>
-                                <td style={{ fontWeight: 600 }}>{log.feature}</td>
-                                <td style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '300px' }}>{log.errorMessage}</td>
-                                <td>{log.userId?.name || 'Anonymous'}</td>
-                                <td>{new Date(log.timestamp).toLocaleString()}</td>
-                                <td><span className="status error">FAILED</span></td>
+                <TableWrapper>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Error Message</th>
+                                <th>User</th>
+                                <th>Timestamp</th>
+                                <th>Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {errorLogs.map((log, i) => (
+                                <tr key={i}>
+                                    <td style={{ fontWeight: 600 }}>{log.feature}</td>
+                                    <td style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '300px' }}>{log.errorMessage}</td>
+                                    <td>{log.userId?.name || 'Anonymous'}</td>
+                                    <td>{new Date(log.timestamp).toLocaleString()}</td>
+                                    <td><span className="status error">FAILED</span></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </TableWrapper>
             </Card>
         </Container>
     );

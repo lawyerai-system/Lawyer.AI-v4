@@ -19,6 +19,12 @@ router.patch('/:id/status',
   contactController.updateStatus
 );
 
+router.patch('/:id/issue-type',
+  protect,
+  restrictTo('admin'),
+  contactController.updateIssueType
+);
+
 router.delete('/:id',
   protect,
   restrictTo('admin'),

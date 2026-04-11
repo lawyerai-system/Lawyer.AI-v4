@@ -3,6 +3,19 @@ import styled, { keyframes } from 'styled-components';
 import { FaQuoteLeft, FaRocket, FaBullseye, FaUsers, FaMicrochip, FaArrowRight, FaScaleBalanced, FaGraduationCap } from 'react-icons/fa6';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
+import AIModel from '../../components/Landing/AIModel';
+
+const FixedBackground = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+`;
+
+const ContentContainer = styled.div`
+  position: relative;
+  z-index: 10;
+`;
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -223,114 +236,119 @@ const AboutPage = () => {
   return (
     <PageWrapper>
       <LandingNav />
-      <PageContainer>
-        <HeroSection>
-          <h1>Redefining Justice</h1>
-          <p>
-            Lawyer.AI is an AI-powered legal assistance platform designed to help 
-            civilians, law students, and lawyers access legal knowledge and high-performance tools.
-          </p>
-        </HeroSection>
-
-        {/* Introduction */}
-        <Section>
-          <VisualBlock><FaRocket /></VisualBlock>
-          <ContentBlock>
-            <h2><FaArrowRight size={24} /> Platform Introduction</h2>
+      <FixedBackground>
+        <AIModel />
+      </FixedBackground>
+      <ContentContainer>
+        <PageContainer>
+          <HeroSection>
+            <h1>Redefining Justice</h1>
             <p>
-              In a world where legal processes can be overwhelming, Lawyer.AI acts as a 
-              bridge between complex law and the citizens who need it. We've built an 
-              ecosystem that transforms legal research from weeks to seconds, bringing a 
-              new level of clarity to the justice system.
+              Lawyer.AI is an AI-powered legal assistance platform designed to help
+              civilians, law students, and lawyers access legal knowledge and high-performance tools.
             </p>
-            <div className="accent-box">
-              <span>Smart Litigation</span>
-              We use Large Language Models (LLMs) specifically trained on Indian legal 
-              statutes and landmark judgments to provide reliable assistance.
-            </div>
-          </ContentBlock>
-        </Section>
+          </HeroSection>
 
-        {/* Mission */}
-        <Section>
-          <VisualBlock><FaBullseye /></VisualBlock>
-          <ContentBlock>
-            <h2><FaArrowRight size={24} /> Mission Statement</h2>
-            <p>
-              Our mission is to democratize legal information. We believe that knowing 
-              the law shouldn't be a privilege of the few, but a right accessible to 
-              every citizen in the country.
-            </p>
-            <p>
-              We are committed to reducing the burden on the Indian judicial system 
-              by promoting informed legal discourse and providing students with 
-              unparalleled training simulators to become the next generation of jurists.
-            </p>
-          </ContentBlock>
-        </Section>
+          {/* Introduction */}
+          <Section>
+            <VisualBlock><FaRocket /></VisualBlock>
+            <ContentBlock>
+              <h2><FaArrowRight size={24} /> Platform Introduction</h2>
+              <p>
+                In a world where legal processes can be overwhelming, Lawyer.AI acts as a
+                bridge between complex law and the citizens who need it. We've built an
+                ecosystem that transforms legal research from weeks to seconds, bringing a
+                new level of clarity to the justice system.
+              </p>
+              <div className="accent-box">
+                <span>Smart Litigation</span>
+                We use Large Language Models (LLMs) specifically trained on Indian legal
+                statutes and landmark judgments to provide reliable assistance.
+              </div>
+            </ContentBlock>
+          </Section>
 
-        {/* Who Can Use */}
-        <div style={{ marginBottom: '10rem' }}>
-          <ContentBlock style={{ textAlign: 'center' }}>
-            <h2><FaUsers /> Who Can Use the Platform?</h2>
-            <p style={{ maxWidth: '800px', margin: '0 auto 4rem' }}>
-              Lawyer.AI is designed with specialized features for every stakeholder 
-              in the legal journey.
-            </p>
-          </ContentBlock>
-          <UserGrid>
-            <UserCard>
-              <div className="icon"><FaUsers /></div>
-              <h4>Civilians</h4>
-              <p>Understand your legal rights, search for IPC sections, and analyze your personal contracts without the legal jargon.</p>
-            </UserCard>
-            <UserCard>
-              <div className="icon"><FaGraduationCap /></div>
-              <h4>Law Students</h4>
-              <p>Sharpen your skills with Moot Court simulators, generate case strategies, and access historical case data for study.</p>
-            </UserCard>
-            <UserCard>
-              <div className="icon"><FaScaleBalanced /></div>
-              <h4>Lawyers</h4>
-              <p>Predict case outcomes using AI, organize your research, and collaborate securely with clients in Justice Rooms.</p>
-            </UserCard>
-          </UserGrid>
-        </div>
+          {/* Mission */}
+          <Section>
+            <VisualBlock><FaBullseye /></VisualBlock>
+            <ContentBlock>
+              <h2><FaArrowRight size={24} /> Mission Statement</h2>
+              <p>
+                Our mission is to democratize legal information. We believe that knowing
+                the law shouldn't be a privilege of the few, but a right accessible to
+                every citizen in the country.
+              </p>
+              <p>
+                We are committed to reducing the burden on the Indian judicial system
+                by promoting informed legal discourse and providing students with
+                unparalleled training simulators to become the next generation of jurists.
+              </p>
+            </ContentBlock>
+          </Section>
 
-        {/* Quote */}
-        <QuoteSection>
-          <FaQuoteLeft />
-          <blockquote>
-            "Technology is the ultimate equalizer in the pursuit of justice."
-          </blockquote>
-        </QuoteSection>
+          {/* Who Can Use */}
+          <div style={{ marginBottom: '10rem' }}>
+            <ContentBlock style={{ textAlign: 'center' }}>
+              <h2><FaUsers /> Who Can Use the Platform?</h2>
+              <p style={{ maxWidth: '800px', margin: '0 auto 4rem' }}>
+                Lawyer.AI is designed with specialized features for every stakeholder
+                in the legal journey.
+              </p>
+            </ContentBlock>
+            <UserGrid>
+              <UserCard>
+                <div className="icon"><FaUsers /></div>
+                <h4>Civilians</h4>
+                <p>Understand your legal rights, search for IPC sections, and analyze your personal contracts without the legal jargon.</p>
+              </UserCard>
+              <UserCard>
+                <div className="icon"><FaGraduationCap /></div>
+                <h4>Law Students</h4>
+                <p>Sharpen your skills with Moot Court simulators, generate case strategies, and access historical case data for study.</p>
+              </UserCard>
+              <UserCard>
+                <div className="icon"><FaScaleBalanced /></div>
+                <h4>Lawyers</h4>
+                <p>Predict case outcomes using AI, organize your research, and collaborate securely with clients in Justice Rooms.</p>
+              </UserCard>
+            </UserGrid>
+          </div>
 
-        {/* Technology */}
-        <Section>
-          <VisualBlock><FaMicrochip /></VisualBlock>
-          <ContentBlock>
-            <h2><FaArrowRight size={24} /> Technology Behind Lawyer.AI</h2>
-            <p>
-              Our platform is built on a sophisticated technical backbone combining 
-              real-time data processing with state-of-the-art Generative AI. 
-            </p>
-            <p>
-              We utilize a proprietary Legal Knowledge Base that indexes the Indian 
-              Penal Code and thousands of Supreme Court judgments, feeding them into 
-              advanced reasoning models to provide contextual legal support.
-            </p>
-            <TechStack>
-              <span>Google Gemini AI</span>
-              <span>Vector Search</span>
-              <span>Indian Law Graph</span>
-              <span>Edge Computing</span>
-              <span>AES-256 Encryption</span>
-            </TechStack>
-          </ContentBlock>
-        </Section>
+          {/* Quote */}
+          <QuoteSection>
+            <FaQuoteLeft />
+            <blockquote>
+              "Technology is the ultimate equalizer in the pursuit of justice."
+            </blockquote>
+          </QuoteSection>
 
-      </PageContainer>
-      <LandingFooter />
+          {/* Technology */}
+          <Section>
+            <VisualBlock><FaMicrochip /></VisualBlock>
+            <ContentBlock>
+              <h2><FaArrowRight size={24} /> Technology Behind Lawyer.AI</h2>
+              <p>
+                Our platform is built on a sophisticated technical backbone combining
+                real-time data processing with state-of-the-art Generative AI.
+              </p>
+              <p>
+                We utilize a proprietary Legal Knowledge Base that indexes the Indian
+                Penal Code and thousands of Supreme Court judgments, feeding them into
+                advanced reasoning models to provide contextual legal support.
+              </p>
+              <TechStack>
+                <span>Google Gemini AI</span>
+                <span>Vector Search</span>
+                <span>Indian Law Graph</span>
+                <span>Edge Computing</span>
+                <span>AES-256 Encryption</span>
+              </TechStack>
+            </ContentBlock>
+          </Section>
+
+        </PageContainer>
+        <LandingFooter />
+      </ContentContainer>
     </PageWrapper>
   );
 };

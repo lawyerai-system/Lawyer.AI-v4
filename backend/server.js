@@ -16,6 +16,7 @@ const userProfileRoutes = require('./routes/userProfile');
 const contactRoutes = require('./routes/contactRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const ipcRoutes = require('./routes/ipcRoutes');
+const checkMaintenanceMode = require('./middleware/maintenanceMiddleware');
 
 dotenv.config();
 
@@ -63,6 +64,9 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Apply Maintenance Mode Check Globally
+app.use(checkMaintenanceMode);
+
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
@@ -82,7 +86,7 @@ app.use('/api/cases', require('./routes/caseRoutes'));
 app.use('/api/predict', require('./routes/predictorRoutes'));
 app.use('/api/simulation', require('./routes/simulationRoutes'));
 app.use('/api/announcements', require('./routes/announcementRoutes'));
-app.use('/api/settings', require('./routes/settingsRoutes'));
+app.use('/api/admin/settings', require('./routes/settingsRoutes'));
 app.use('/api/builder', require('./routes/builderRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 

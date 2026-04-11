@@ -17,6 +17,8 @@ router.post('/:userId/room', courtroomController.postRoom);
 // UPDATE
 router.put('/:userId/messages/status', courtroomController.updateMessageReadStatus);
 router.put('/:userId/messages/pin/:messageId', courtroomController.toggleMessagePin);
+router.patch('/:userId/messages/:messageId', courtroomController.editMessage);
+router.delete('/:userId/messages/:messageId', courtroomController.deleteMessage);
 
 // AI & SUMMARY
 router.post('/:userId/chat/summary', courtroomController.generateChatSummary);

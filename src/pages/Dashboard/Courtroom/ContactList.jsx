@@ -142,11 +142,29 @@ const ContactList = () => {
               {isOnline(contact._id) && <OnlineDot />}
             </Avatar>
             <Info>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {contact.name || 'Unknown'}
-                <RoleBadge role={contact.role}>{contact.role === 'user' ? 'civilian' : contact.role}</RoleBadge>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {contact.name || 'Unknown'}
+                  <RoleBadge role={contact.role}>{contact.role === 'user' ? 'civilian' : contact.role}</RoleBadge>
+                </div>
+                {contact.latestMessageUpdatedAt && (
+                  <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>
+                    {new Date(contact.latestMessageUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
               </div>
-              <span>{contact.email}</span>
+              <span style={{
+                display: 'block',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                maxWidth: '180px',
+                opacity: contact.unreadCount > 0 ? 1 : 0.6,
+                fontWeight: contact.unreadCount > 0 ? 600 : 400,
+                color: contact.unreadCount > 0 ? 'var(--primary)' : 'inherit'
+              }}>
+                {contact.latestMessage || contact.email}
+              </span>
             </Info>
             {contact.unreadCount > 0 && <Badge>{contact.unreadCount}</Badge>}
           </Item>

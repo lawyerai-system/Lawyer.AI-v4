@@ -7,23 +7,49 @@ import { toast } from 'react-hot-toast';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+  padding: 1rem;
+
+  @media (min-width: 640px) {
+    gap: 2rem;
+    padding: 1rem 0;
+  }
 `;
 
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const Title = styled.h2`
   color: var(--text-main);
   margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+
+  @media (min-width: 640px) {
+    font-size: 1.8rem;
+  }
 `;
 
 const Controls = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 1rem;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
 `;
 
 const SearchInput = styled.input`
@@ -32,7 +58,11 @@ const SearchInput = styled.input`
   border: 1px solid var(--border);
   background: rgba(255,255,255,0.05);
   color: white;
-  min-width: 300px;
+  width: 100%;
+  
+  @media (min-width: 768px) {
+    min-width: 300px;
+  }
   
   &:focus {
     outline: none;
@@ -44,13 +74,32 @@ const Button = styled.button`
   background: #7e3af2;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  width: 100%;
+  
+  @media (min-width: 768px) {
+    width: auto;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+  }
   
   &:hover {
     background: #6c2bd9;
+  }
+`;
+
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  width: 100%;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
   }
 `;
 
@@ -62,6 +111,7 @@ const Table = styled.table`
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   border: 1px solid var(--border);
+  min-width: 800px;
 `;
 
 const Th = styled.th`
@@ -263,31 +313,33 @@ const IPCManagement = () => {
             </Header>
 
             {loading ? <p>Loading...</p> : (
-                <Table>
-                    <thead>
-                        <tr>
-                            <Th width="15%">Section</Th>
-                            <Th width="30%">Offence</Th>
-                            <Th width="40%">Description</Th>
-                            <Th width="15%">Actions</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sections.map(s => (
-                            <tr key={s._id}>
-                                <Td>{s.section}</Td>
-                                <Td>{s.offence}</Td>
-                                <Td>{s.description.substring(0, 100)}...</Td>
-                                <Td>
-                                    <ActionGroup>
-                                        <ActionButton onClick={() => handleEdit(s)}>Edit</ActionButton>
-                                        <ActionButton danger onClick={() => setDeleteModal({ isOpen: true, id: s._id })}>Delete</ActionButton>
-                                    </ActionGroup>
-                                </Td>
+                <TableWrapper>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <Th width="15%">Section</Th>
+                                <Th width="30%">Offence</Th>
+                                <Th width="40%">Description</Th>
+                                <Th width="15%">Actions</Th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {sections.map(s => (
+                                <tr key={s._id}>
+                                    <Td>{s.section}</Td>
+                                    <Td>{s.offence}</Td>
+                                    <Td>{s.description.substring(0, 100)}...</Td>
+                                    <Td>
+                                        <ActionGroup>
+                                            <ActionButton onClick={() => handleEdit(s)}>Edit</ActionButton>
+                                            <ActionButton danger onClick={() => setDeleteModal({ isOpen: true, id: s._id })}>Delete</ActionButton>
+                                        </ActionGroup>
+                                    </Td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </TableWrapper>
             )}
 
             {showModal && (
@@ -334,7 +386,7 @@ const IPCManagement = () => {
                 </ModalOverlay>
             )}
 
-            <ConfirmModal 
+            <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={() => setDeleteModal({ isOpen: false, id: null })}
                 onConfirm={handleDelete}
