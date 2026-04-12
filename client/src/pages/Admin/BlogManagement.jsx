@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
-import DeleteModal from '../../components/Common/DeleteModal';
+import ConfirmModal from '../../components/Common/ConfirmModal';
 import {
     FaSearch, FaFilter, FaStar, FaRegStar, FaTrash, FaEdit,
     FaExternalLinkAlt, FaChevronLeft, FaChevronRight, FaBlog
@@ -352,13 +352,14 @@ const BlogManagement = () => {
                 )}
             </TableContainer>
 
-            <DeleteModal
+            <ConfirmModal
                 isOpen={!!deleteId}
                 onClose={() => { setDeleteId(null); setBlogToDelete(null); }}
                 onConfirm={confirmDelete}
                 title="Permanently Delete Article?"
                 message={`This will remove the blog post from the platform forever. This action cannot be undone.`}
                 itemName={blogToDelete?.title}
+                type="danger"
             />
         </Container>
     );

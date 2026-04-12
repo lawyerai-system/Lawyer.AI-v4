@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
-import DeleteModal from '../../components/Common/DeleteModal';
+import ConfirmModal from '../../components/Common/ConfirmModal';
 import {
     FaSearch, FaGavel, FaTrash, FaEdit, FaCheck, FaTimes,
     FaBookmark, FaRegBookmark, FaChevronLeft, FaChevronRight,
@@ -434,13 +434,14 @@ const CaseManagement = () => {
                 )}
             </TableContainer>
 
-            <DeleteModal
+            <ConfirmModal
                 isOpen={!!deleteId}
                 onClose={() => { setDeleteId(null); setCaseToDelete(null); }}
                 onConfirm={confirmDelete}
                 title="Remove Case Record?"
-                message={`This will permanently remove the case entry from the public library. Content will no longer be searchable or referenceable.`}
+                message="This will permanently remove the case entry from the public library. Content will no longer be searchable or referenceable."
                 itemName={caseToDelete?.title}
+                type="danger"
             />
         </Container>
     );

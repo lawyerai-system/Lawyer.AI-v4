@@ -1,5 +1,5 @@
 {
-  "name": "user-backend",
+  "name": "@lawyer-ai/server",
   "version": "1.0.0",
   "description": "Backend for UserLawAI application",
   "main": "server.js",
@@ -24,7 +24,6 @@
     "nodemailer": "^6.9.16",
     "openai": "^6.16.0",
     "pdf-parse": "^2.4.5",
-    "pyodide": "^0.27.2",
     "socket.io": "^4.8.3",
     "twilio": "^5.4.5",
     "uuid": "^11.0.5",

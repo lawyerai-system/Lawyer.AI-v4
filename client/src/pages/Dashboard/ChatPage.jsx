@@ -5,7 +5,7 @@ import UserAvatar from '../../components/Common/UserAvatar';
 import api from '../../utils/axios';
 import { FaPaperPlane, FaTrash, FaRobot, FaUser, FaBars, FaXmark, FaPlus, FaLightbulb, FaGavel, FaFileContract, FaScaleUnbalanced } from 'react-icons/fa6';
 import { useAuth } from '../../context/AuthContext';
-import DeleteModal from '../../components/Common/DeleteModal';
+import ConfirmModal from '../../components/Common/ConfirmModal';
 
 // Animations
 const fadeIn = keyframes`
@@ -701,13 +701,14 @@ const ChatPage = () => {
 
   return (
     <ChatPageLayout>
-      <DeleteModal
+      <ConfirmModal
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={confirmDelete}
         title="Delete Conversation"
         message="Are you sure you want to delete this chat history?"
         itemName={itemToDelete}
+        type="danger"
       />
 
       {selectedSection && (

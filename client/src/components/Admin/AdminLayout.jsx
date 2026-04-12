@@ -340,6 +340,25 @@ const AdminLayout = () => {
             Dashboard
           </NavItem>
 
+          <SidebarSection title="Legal Modules" icon={<FaScaleBalanced />} pathPrefix="/admin/research" location={location}>
+            <NavItem to="/admin/research" active={isActive('/admin/research') ? 1 : 0}>
+              <span className="icon"><FaScaleBalanced size={14} /></span>
+              Research Hub
+            </NavItem>
+            <NavItem to="/admin/practice" active={isActive('/admin/practice') ? 1 : 0}>
+              <span className="icon"><FaGavel size={14} /></span>
+              Practice Jam
+            </NavItem>
+            <NavItem to="/admin/academy" active={isActive('/admin/academy') ? 1 : 0}>
+              <span className="icon"><FaUserGraduate size={14} /></span>
+              Academy
+            </NavItem>
+            <NavItem to="/admin/community" active={isActive('/admin/community') ? 1 : 0}>
+              <span className="icon"><FaComments size={14} /></span>
+              Community
+            </NavItem>
+          </SidebarSection>
+
           <SidebarSection title="User Management" icon={<FaUsers />} pathPrefix="/admin/user" location={location}>
             <NavItem to="/admin/users" active={isActive('/admin/users') ? 1 : 0}>
               <span className="icon"><FaUsers size={14} /></span>

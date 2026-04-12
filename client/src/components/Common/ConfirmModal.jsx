@@ -96,19 +96,39 @@ const PositiveButton = styled(Button)`
   }
 `;
 
-const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, icon, confirmText, type = 'primary' }) => {
+const ConfirmModal = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  title, 
+  message, 
+  itemName,
+  icon, 
+  confirmText, 
+  type = 'primary' 
+}) => {
     if (!isOpen) return null;
+
+    // Default icon for danger type if none provided
+    const displayIcon = icon || (type === 'danger' ? '🗑️' : null);
 
     return (
         <Overlay onClick={onClose}>
             <ModalContainer onClick={e => e.stopPropagation()}>
-                {icon && <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>{icon}</div>}
-                <Title>{title || 'Are you sure?'}</Title>
-                <Message>{message}</Message>
+                {displayIcon && <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>{displayIcon}</div>}
+                <Title>{title || (type === 'danger' ? 'Delete Item?' : 'Are you sure?')}</Title>
+                <Message>
+                  {message || (type === 'danger' ? 'This action cannot be undone.' : '')}
+                  {itemName && (
+                    <div style={{ marginTop: '0.8rem', fontWeight: 'bold', color: 'var(--text-main)', fontSize: '1.1rem' }}>
+                      "{itemName}"
+                    </div>
+                  )}
+                </Message>
                 <ButtonGroup>
                     <CancelButton onClick={onClose}>Cancel</CancelButton>
                     <PositiveButton type={type} onClick={() => { onConfirm(); onClose(); }}>
-                        {confirmText || 'Confirm'}
+                        {confirmText || (type === 'danger' ? 'Delete' : 'Confirm')}
                     </PositiveButton>
                 </ButtonGroup>
             </ModalContainer>

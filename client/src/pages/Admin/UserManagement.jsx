@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
 import { useAuth } from '../../context/AuthContext';
-import DeleteModal from '../../components/Common/DeleteModal';
 import ConfirmModal from '../../components/Common/ConfirmModal';
 import {
     FaSearch, FaFilter, FaUserShield, FaUserGraduate, FaUser,
@@ -676,13 +675,14 @@ const UserManagement = () => {
                 type={confirmModal.type === 'status' && confirmModal.data?.isActive ? 'danger' : 'primary'}
             />
 
-            <DeleteModal
+            <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={() => setDeleteModal({ isOpen: false, user: null })}
                 onConfirm={handleDelete}
                 itemName={deleteModal.user?.name}
                 title="Permanently Delete User"
                 message="This action is irreversible. All user data, linked blogs, and courtroom history will be permanently erased."
+                type="danger"
             />
         </Container>
     );

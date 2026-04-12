@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import api from '../../utils/axios';
-import DeleteModal from '../../components/Common/DeleteModal';
+import ConfirmModal from '../../components/Common/ConfirmModal';
 import { FaFilter, FaSearch, FaEnvelopeOpenText, FaTrash, FaCheckCircle, FaSpinner } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
@@ -349,13 +349,14 @@ const ContactManagement = () => {
                 )}
             </TableContainer>
 
-            <DeleteModal
+            <ConfirmModal
                 isOpen={!!deleteId}
                 onClose={() => { setDeleteId(null); setContactToDelete(null); }}
                 onConfirm={confirmDelete}
                 title="Delete Submission?"
                 message="Are you sure you want to delete this submission? This action cannot be undone."
                 itemName={contactToDelete?.name}
+                type="danger"
             />
         </Container>
     );

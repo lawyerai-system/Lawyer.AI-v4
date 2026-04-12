@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../utils/axios';
 import { FaArrowLeft, FaUser, FaCalendar, FaTag, FaTrash, FaPen, FaFlag } from 'react-icons/fa6';
+import ConfirmModal from '../../../components/Common/ConfirmModal';
 import { useAuth } from '../../../context/AuthContext';
 import ReportModal from '../../../components/Common/ReportModal';
 import UserAvatar from '../../../components/Common/UserAvatar';
@@ -307,60 +308,7 @@ const BlogDetail = () => {
     }
   };
 
-  const DeleteModal = () => (
-    <div style={{
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.7)',
-      backdropFilter: 'blur(5px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        background: '#282a37',
-        padding: '2rem',
-        borderRadius: '16px',
-        border: '1px solid rgba(255,255,255,0.1)',
-        maxWidth: '400px',
-        textAlign: 'center',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.4)'
-      }}>
-        <h3 style={{ color: 'white', marginBottom: '1rem' }}>Delete Article?</h3>
-        <p style={{ color: '#ccc', marginBottom: '1.5rem', lineHeight: '1.5' }}>
-          Are you sure you want to delete <b style={{ color: 'white' }}>{post.title}</b>? This action cannot be undone.
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <button
-            onClick={() => setShowDeleteModal(false)}
-            style={{
-              padding: '0.8rem 1.5rem',
-              borderRadius: '8px',
-              border: '1px solid rgba(255,255,255,0.2)',
-              background: 'transparent',
-              color: 'white',
-              cursor: 'pointer'
-            }}>
-            Cancel
-          </button>
-          <button
-            onClick={confirmDelete}
-            style={{
-              padding: '0.8rem 1.5rem',
-              borderRadius: '8px',
-              border: 'none',
-              background: '#ff4d4d',
-              color: 'white',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}>
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  // Removed local DeleteModal component
 
   const handleDelete = () => {
     setShowDeleteModal(true);
@@ -371,7 +319,14 @@ const BlogDetail = () => {
 
   return (
     <PageContainer>
-      {showDeleteModal && <DeleteModal />}
+      <ConfirmModal 
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Article?"
+        message={`Are you sure you want to delete "${post.title}"?`}
+        type="danger"
+      />
       <BackBtn onClick={() => navigate('/dashboard/blog')}>
         <FaArrowLeft /> Back to Articles
       </BackBtn>

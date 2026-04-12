@@ -9,26 +9,34 @@ Lawyer.AI aims to democratize legal access through technology, providing tools f
 
 ## 🚀 Getting Started
 
-Follow these steps to set up the project on your local machine.
+#### Lawyer.AI v4 (Monorepo)
 
-### 1. 📥 Install Dependencies
-The project uses a consolidated root structure with a React frontend and a Node.js/Express backend.
+The most advanced AI-powered legal assistance platform, now organized for scale.
 
-#### For the Entire Application (Root):
-1. Open a terminal in the project root directory.
-2. Run the following command to install frontend dependencies:
+## 📂 Project Structure
+- `/client`: Frontend built with React + Vite.
+- `/server`: Backend built with Node.js + Express.
+
+## 🚀 Getting Started
+
+1. **Install Dependencies** (from the root folder):
    ```bash
    npm install
    ```
 
-#### For the Backend:
-1. Navigate to the backend directory:
+2. **Run Everything** (Frontend & Backend):
    ```bash
-   cd backend
+   npm run dev
    ```
-2. Run the following command to install backend dependencies:
+
+3. **Backend Only**:
    ```bash
-   npm install
+   npm run server
+   ```
+
+4. **Frontend Only**:
+   ```bash
+   npm run client
    ```
 
 ---

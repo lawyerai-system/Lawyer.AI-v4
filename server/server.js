@@ -16,6 +16,7 @@ const userProfileRoutes = require('./routes/userProfile');
 const contactRoutes = require('./routes/contactRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const ipcRoutes = require('./routes/ipcRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 const checkMaintenanceMode = require('./middleware/maintenanceMiddleware');
 
 dotenv.config();
@@ -89,6 +90,7 @@ app.use('/api/announcements', require('./routes/announcementRoutes'));
 app.use('/api/admin/settings', require('./routes/settingsRoutes'));
 app.use('/api/builder', require('./routes/builderRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/reports', reportRoutes);
 
 // ...
 
@@ -155,7 +157,7 @@ process.on('uncaughtException', (err) => {
 
 // 404 handler
 // Serve static files from the React frontend app
-const distPath = path.join(__dirname, '../dist');
+const distPath = path.join(__dirname, '../client/dist');
 console.log('Serving static files from:', distPath);
 app.use(express.static(distPath));
 
