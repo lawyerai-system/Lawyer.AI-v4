@@ -10,7 +10,9 @@ const Nav = styled.nav`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  user-select: none;
   padding: ${props => props.$scrolled ? '1rem 0' : '1.5rem 0'};
   background: ${props => props.$scrolled ? 'rgba(11, 13, 20, 0.8)' : 'transparent'};
   backdrop-filter: ${props => props.$scrolled ? 'blur(20px)' : 'none'};
@@ -28,17 +30,22 @@ const Container = styled.div`
 `;
 
 const Logo = styled.div`
-  font-size: 1.6rem;
-  font-weight: 900;
-  letter-spacing: -1px;
-  color: #fff;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.8rem;
+  cursor: pointer;
   
+  img {
+    height: 35px;
+    width: auto;
+  }
+
   span {
-    background: linear-gradient(135deg, #6c5dd3 0%, #ff754c 100%);
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: #fff;
+    background: linear-gradient(135deg, #fff 0%, #a0a3bd 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -59,6 +66,8 @@ const NavLink = styled.a`
   cursor: pointer;
   font-weight: 600;
   font-size: 0.95rem;
+  cursor: pointer !important;
+  pointer-events: auto !important;
   transition: all 0.3s;
   text-decoration: none;
   position: relative;
@@ -191,7 +200,10 @@ const LandingNav = () => {
     <>
       <Nav $scrolled={scrolled}>
         <Container>
-          <Logo onClick={handleHomeClick}>LAWYER<span>.AI</span></Logo>
+          <Logo onClick={handleHomeClick}>
+            <img src="/legalpal_logo.png" alt="LegalPal Logo" />
+            <span>LEGALPAL</span>
+          </Logo>
           
           <NavLinks>
             {navItems.map(item => (

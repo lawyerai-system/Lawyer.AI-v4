@@ -91,7 +91,7 @@ function App() {
             <Route path="/dashboard/*" element={<RoleRedirect />} />
 
             {/* Lawyer Dashboard */}
-            <Route path="/lawyer/*" element={
+            <Route path="/lawyer" element={
               <RoleProtectedRoute allowedRoles={['lawyer']}>
                 <SocketProvider>
                   <ChatProvider>
@@ -126,7 +126,7 @@ function App() {
             </Route>
 
             {/* Student Dashboard */}
-            <Route path="/student/*" element={
+            <Route path="/student" element={
               <RoleProtectedRoute allowedRoles={['law_student']}>
                 <SocketProvider>
                   <ChatProvider>
@@ -156,7 +156,7 @@ function App() {
             </Route>
 
             {/* Civilian Dashboard */}
-            <Route path="/civilian/*" element={
+            <Route path="/civilian" element={
               <RoleProtectedRoute allowedRoles={['civilian']}>
                 <SocketProvider>
                   <ChatProvider>
@@ -169,13 +169,16 @@ function App() {
               <Route path="dashboard" element={<DashboardHome />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="chat" element={<ChatPage />} />
+              <Route path="courtroom" element={<CourtroomPage />} />
               <Route path="ipc" element={<IPCPage />} />
               <Route path="research" element={<ResearchHub />} />
-              <Route path="community" element={<CommunityHub />} />
-            </Route>
+                <Route path="practice" element={<PracticeHub />} />
+                <Route path="academy" element={<AcademyHub />} />
+                <Route path="community" element={<CommunityHub />} />
+              </Route>
 
             {/* Admin Dashboard */}
-            <Route path="/admin/*" element={
+            <Route path="/admin" element={
               <ProtectedAdminRoute>
                 <SocketProvider>
                   <AdminLayout />
@@ -195,10 +198,6 @@ function App() {
               <Route path="announcements" element={<AnnouncementManagement />} />
               <Route path="settings" element={<SettingsManagement />} />
               <Route path="profile" element={<ProfilePage />} />
-              <Route path="research" element={<ResearchHub />} />
-              <Route path="practice" element={<PracticeHub />} />
-              <Route path="academy" element={<AcademyHub />} />
-              <Route path="community" element={<CommunityHub />} />
             </Route>
 
             {/* Fallback */}

@@ -1,6 +1,6 @@
-const Message = require('./models/Message');
-const ChatSession = require('./models/ChatSession');
-const MootCourtSession = require('./models/MootCourtSession');
+const Message = require('../models/Message');
+const ChatSession = require('../models/ChatSession');
+const MootCourtSession = require('../models/MootCourtSession');
 
 const runCleanup = async () => {
     try {

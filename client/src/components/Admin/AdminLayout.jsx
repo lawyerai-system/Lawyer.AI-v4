@@ -56,17 +56,23 @@ const SidebarHeader = styled.div`
   height: 70px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.8rem;
   padding: 0 1.5rem;
   border-bottom: 1px solid var(--border);
   font-size: 1.1rem;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   color: var(--primary);
   background: rgba(255,255,255,0.02);
 
+  img {
+    height: 28px;
+    width: auto;
+  }
+
   .close-mobile {
     display: none;
+    margin-left: auto;
     @media (max-width: 1024px) {
       display: block;
       cursor: pointer;
@@ -327,37 +333,19 @@ const AdminLayout = () => {
     <LayoutContainer>
       <SidebarOverlay isOpen={sidebarOpen} onClick={() => setSidebarOpen(false)} />
 
-      <Sidebar isOpen={sidebarOpen}>
-        <SidebarHeader>
-          LAWYER.AI ADMIN
-          <div className="close-mobile" onClick={() => setSidebarOpen(false)}>
-            <FaChevronLeft />
-          </div>
-        </SidebarHeader>
+        <Sidebar isOpen={sidebarOpen}>
+          <SidebarHeader>
+            <img src="/legalpal_logo.png" alt="Logo" />
+            LEGALPAL ADMIN
+            <div className="close-mobile" onClick={() => setSidebarOpen(false)}>
+              <FaChevronLeft />
+            </div>
+          </SidebarHeader>
         <NavList>
           <NavItem to="/admin" active={isActive('/admin') ? 1 : 0}>
             <span className="icon"><FaGauge /></span>
             Dashboard
           </NavItem>
-
-          <SidebarSection title="Legal Modules" icon={<FaScaleBalanced />} pathPrefix="/admin/research" location={location}>
-            <NavItem to="/admin/research" active={isActive('/admin/research') ? 1 : 0}>
-              <span className="icon"><FaScaleBalanced size={14} /></span>
-              Research Hub
-            </NavItem>
-            <NavItem to="/admin/practice" active={isActive('/admin/practice') ? 1 : 0}>
-              <span className="icon"><FaGavel size={14} /></span>
-              Practice Jam
-            </NavItem>
-            <NavItem to="/admin/academy" active={isActive('/admin/academy') ? 1 : 0}>
-              <span className="icon"><FaUserGraduate size={14} /></span>
-              Academy
-            </NavItem>
-            <NavItem to="/admin/community" active={isActive('/admin/community') ? 1 : 0}>
-              <span className="icon"><FaComments size={14} /></span>
-              Community
-            </NavItem>
-          </SidebarSection>
 
           <SidebarSection title="User Management" icon={<FaUsers />} pathPrefix="/admin/user" location={location}>
             <NavItem to="/admin/users" active={isActive('/admin/users') ? 1 : 0}>

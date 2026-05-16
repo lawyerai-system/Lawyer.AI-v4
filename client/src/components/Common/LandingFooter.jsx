@@ -86,19 +86,24 @@ const FooterColumn = styled.div`
 `;
 
 const Logo = styled.div`
-  font-size: 1.2rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #fff 0%, #a0a3bd 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   cursor: pointer;
   margin-bottom: 1rem;
+  
+  img {
+    height: 24px;
+    width: auto;
+  }
 
   span {
-    color: var(--primary);
-    -webkit-text-fill-color: initial;
-    background: none;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #a0a3bd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 `;
 
@@ -154,7 +159,10 @@ const LandingFooter = () => {
       <Container>
         <FooterGrid>
           <FooterColumn>
-            <Logo onClick={handleHomeClick}>LAWYER<span>.AI</span></Logo>
+            <Logo onClick={handleHomeClick}>
+              <img src="/legalpal_logo.png" alt="LegalPal" />
+              <span>LEGALPAL</span>
+            </Logo>
             <p style={{ maxWidth: '300px' }}>
               The next generation of legal intelligence. Empowering people through AI-driven access to justice.
             </p>
@@ -192,7 +200,7 @@ const LandingFooter = () => {
 
         <FooterBottom>
           <p style={{ color: '#686a7d', fontSize: '0.85rem' }}>
-            © 2024 Lawyer.AI. Created with ❤️ for Justice.
+            © 2026 LegalPal. Created with ❤️ for Justice.
           </p>
           <SocialLinks>
             <a href="https://github.com/Hetshah1203"><Github size={18} /></a>

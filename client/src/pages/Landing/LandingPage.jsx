@@ -281,7 +281,7 @@ const LandingPage = () => {
               Ready to automate your legal research?
             </h2>
             <Subtitle>Join thousands of users leveraging AI for faster, smarter legal results.</Subtitle>
-            <MainCTA onClick={() => navigate('/auth')}>Launch Lawyer.AI Now</MainCTA>
+            <MainCTA onClick={() => navigate('/auth')}>Launch LegalPal Now</MainCTA>
           </ContentCard>
         </Section>
 

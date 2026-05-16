@@ -9,7 +9,8 @@ import UserAvatar from '../Common/UserAvatar';
 const NavContainer = styled.nav`
   position: sticky;
   top: 0;
-  z-index: 2000;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
   background: rgba(15, 17, 26, 0.7);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -37,17 +38,10 @@ const LogoLink = styled(Link)`
   }
 `;
 
-const LogoIcon = styled.div`
+const LogoImage = styled.img`
   width: 38px;
   height: 38px;
-  background: linear-gradient(135deg, #6c5dd3 0%, #a0e6ff 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 16px rgba(108, 93, 211, 0.3);
-  color: white;
-  font-size: 1.2rem;
+  object-fit: contain;
 `;
 
 const LogoText = styled.h2`
@@ -61,8 +55,8 @@ const LogoText = styled.h2`
   text-transform: uppercase;
   
   span {
-    color: var(--primary);
-    -webkit-text-fill-color: var(--primary);
+    color: #6c5dd3;
+    -webkit-text-fill-color: #6c5dd3;
   }
 `;
 
@@ -74,6 +68,9 @@ const NavLinks = styled.div`
   padding: 0.5rem 1.5rem;
   border-radius: 100px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
 
   @media (max-width: 1024px) {
     display: none;
@@ -89,6 +86,8 @@ const StyledLink = styled(NavLink)`
   padding: 0.5rem 0.8rem;
   border-radius: 8px;
   position: relative;
+  pointer-events: auto !important;
+  cursor: pointer !important;
 
   &:hover {
     color: white;
@@ -484,8 +483,8 @@ const Navbar = () => {
     <>
       <NavContainer>
         <LogoLink to={getDashboardPath()}>
-          <LogoIcon><FaMicrochip /></LogoIcon>
-          <LogoText>LAWYER<span>.AI</span></LogoText>
+          <LogoImage src="/legalpal_logo.png" alt="LegalPal" />
+          <LogoText>LEGAL<span>PAL</span></LogoText>
         </LogoLink>
 
         <NavLinks>
@@ -537,8 +536,8 @@ const Navbar = () => {
       <MobileMenu $isOpen={isMobileOpen}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
           <LogoLink to={getDashboardPath()} onClick={() => setIsMobileOpen(false)}>
-            <LogoIcon><FaMicrochip /></LogoIcon>
-            <LogoText>LAWYER<span>.AI</span></LogoText>
+            <LogoImage src="/legalpal_logo.png" alt="LegalPal" />
+            <LogoText>LEGAL<span>PAL</span></LogoText>
           </LogoLink>
           <MobileMenuBtn onClick={() => setIsMobileOpen(false)}>
             <FaXmark />

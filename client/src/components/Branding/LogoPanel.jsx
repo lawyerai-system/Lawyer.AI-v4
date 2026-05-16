@@ -61,11 +61,14 @@ const GlassCard = styled.div`
 `;
 
 const LogoContainer = styled.div`
-  font-size: 5rem;
   margin-bottom: 2rem;
-  color: var(--primary);
   filter: drop-shadow(0 0 20px rgba(108, 93, 211, 0.4));
   animation: float 6s ease-in-out infinite;
+
+  img {
+    height: 100px;
+    width: auto;
+  }
 
   @keyframes float {
     0% { transform: translateY(0px) rotate(0deg); }
@@ -97,9 +100,9 @@ const LogoPanel = () => {
     <PanelWrapper>
       <GlassCard>
         <LogoContainer>
-          <FaGavel />
+          <img src="/legalpal_logo.png" alt="LegalPal" />
         </LogoContainer>
-        <Title>Lawyer.AI</Title>
+        <Title>LegalPal</Title>
         <Subtitle>
           Elevating legal intelligence with the next generation of AI-driven research and consultation tools.
         </Subtitle>

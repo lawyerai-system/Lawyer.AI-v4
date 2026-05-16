@@ -14,7 +14,7 @@ import os
 import json
 import glob
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, 'legal_model.pkl')
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'ml', 'legal_model.pkl')
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 # Load General Definitions

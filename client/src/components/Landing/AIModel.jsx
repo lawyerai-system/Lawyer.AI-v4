@@ -92,10 +92,11 @@ const AIModel = () => {
             position: 'absolute',
             top: 0,
             left: 0,
-            zIndex: 0,
-            opacity: 0.95
+            zIndex: -1,
+            opacity: 0.95,
+            pointerEvents: 'none'
         }}>
-            <Canvas camera={{ position: [0, 0, 30], fov: 35 }}>
+            <Canvas camera={{ position: [0, 0, 30], fov: 35 }} style={{ pointerEvents: 'none' }}>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={2.5} />
                 <MorphingConstellation />
