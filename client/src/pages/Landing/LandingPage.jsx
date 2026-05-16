@@ -165,20 +165,22 @@ const LandingPage = () => {
               <MainCTA onClick={() => navigate('/auth')}>
                 Get Started <ChevronRight size={22} />
               </MainCTA>
-              <button style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: 'white',
-                padding: '1.2rem 2rem',
-                borderRadius: '18px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.8rem',
-                fontSize: '1.1rem',
-                fontWeight: 600
-              }}>
-                <PlayCircle size={24} /> Watch Demo
+              <button 
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'white',
+                  padding: '1.2rem 2rem',
+                  borderRadius: '18px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.8rem',
+                  fontSize: '1.1rem',
+                  fontWeight: 600
+                }}>
+                <Search size={22} /> Explore Features
               </button>
             </div>
           </motion.div>
