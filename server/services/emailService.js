@@ -32,7 +32,7 @@ exports.sendVerificationEmail = async (email, name, verificationToken) => {
     const transporter = await createTransporter();
 
     // Frontend verification URL - using proper URL structure
-    const verificationUrl = `http://localhost:5173/verify-email/${verificationToken}`;
+    const verificationUrl = `http://localhost:5188/verify-email/${verificationToken}`;
 
     const mailOptions = {
       from: `"LawAI Support" <${process.env.EMAIL_USER}>`,
@@ -114,21 +114,21 @@ exports.sendPasswordResetEmail = async (email, name, resetToken) => {
     const transporter = await createTransporter();
 
     // Reset URL - matches active dev port
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetUrl = `http://localhost:5188/reset-password/${resetToken}`;
 
     const mailOptions = {
-      from: `"Lawyer.AI Support" <${process.env.EMAIL_USER}>`,
+      from: `"LegalPal Support" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: 'Password Reset Request – Lawyer.AI',
+      subject: 'Password Reset Request – LegalPal',
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
           <div style="background-color: #6C5DD3; padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Lawyer.AI</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">LegalPal</h1>
           </div>
           <div style="background-color: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
             <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
             <p style="color: #555; line-height: 1.6;">Hello ${name},</p>
-            <p style="color: #555; line-height: 1.6;">We received a request to reset the password for your Lawyer.AI account. Click the button below to set a new password:</p>
+            <p style="color: #555; line-height: 1.6;">We received a request to reset the password for your LegalPal account. Click the button below to set a new password:</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${resetUrl}" style="background-color: #6C5DD3; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                 Reset My Password
@@ -136,7 +136,7 @@ exports.sendPasswordResetEmail = async (email, name, resetToken) => {
             </div>
             <p style="color: #777; font-size: 0.9rem;">This link will expire in 15 minutes. If you did not request a password reset, please ignore this email.</p>
             <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="color: #999; font-size: 0.8rem; text-align: center;">&copy; 2026 Lawyer.AI. All rights reserved.</p>
+            <p style="color: #999; font-size: 0.8rem; text-align: center;">&copy; 2026 LegalPal. All rights reserved.</p>
           </div>
         </div>
       `

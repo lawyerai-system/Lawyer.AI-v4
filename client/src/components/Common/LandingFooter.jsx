@@ -181,10 +181,10 @@ const LandingFooter = () => {
           <FooterColumn>
             <h4>Resources</h4>
             <ul>
-              <li><a onClick={() => handleNav('/docs')}>Documentation</a></li>
-              <li><a onClick={() => handleNav('/help')}>Help Center</a></li>
-              <li><a onClick={() => handleNav('/terms')}>Terms of Service</a></li>
-              <li><a onClick={() => handleNav('/privacy')}>Privacy Policy</a></li>
+              <li><a href="/docs" onClick={(e) => { e.preventDefault(); handleNav('/docs'); }}>Documentation</a></li>
+              <li><a href="/help" onClick={(e) => { e.preventDefault(); handleNav('/help'); }}>Help Center</a></li>
+              <li><a href="/terms" onClick={(e) => { e.preventDefault(); handleNav('/terms'); }}>Terms of Service</a></li>
+              <li><a href="/privacy" onClick={(e) => { e.preventDefault(); handleNav('/privacy'); }}>Privacy Policy</a></li>
             </ul>
           </FooterColumn>
 
@@ -203,10 +203,9 @@ const LandingFooter = () => {
             © 2026 LegalPal. Created with ❤️ for Justice.
           </p>
           <SocialLinks>
-            <a href="https://github.com/Hetshah1203"><Github size={18} /></a>
-            {/*<a href="https://x.com/KikaniHet"><Twitter size={18} /></a>*/}
-            <a href="https://www.linkedin.com/in/het-kikani-67817236b/"><Linkedin size={18} /></a>
-            <a href="https://www.instagram.com/hetansh_3012"><Instagram size={18} /></a>
+            <a href="https://github.com/Hetshah1203" aria-label="Github"><Github size={18} /></a>
+            <a href="https://www.linkedin.com/in/het-kikani-67817236b/" aria-label="LinkedIn"><Linkedin size={18} /></a>
+            <a href="https://www.instagram.com/hetansh_3012" aria-label="Instagram"><Instagram size={18} /></a>
           </SocialLinks>
         </FooterBottom>
       </Container>

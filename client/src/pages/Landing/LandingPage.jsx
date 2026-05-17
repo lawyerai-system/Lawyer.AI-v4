@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Bot, Search, Gavel, BookOpen, ChevronRight, PlayCircle, Scale } from 'lucide-react';
-import AIModel from '../../components/Landing/AIModel';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
+
+const AIModel = lazy(() => import('../../components/Landing/AIModel'));
 
 // --- Styled Components ---
 
@@ -145,7 +146,9 @@ const LandingPage = () => {
       <LandingNav />
 
       <FixedBackground>
-        <AIModel />
+        <Suspense fallback={<div style={{ background: '#0b0d14', inset: 0 }} />}>
+          <AIModel />
+        </Suspense>
       </FixedBackground>
 
       <ContentContainer>
@@ -167,6 +170,7 @@ const LandingPage = () => {
               </MainCTA>
               <button 
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                aria-label="Explore Features"
                 style={{
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.1)',

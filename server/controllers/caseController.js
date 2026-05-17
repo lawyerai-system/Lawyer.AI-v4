@@ -127,6 +127,16 @@ exports.getCase = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'Case not found' });
         }
 
+        // IDOR Protection: Prevent users from viewing others' pending/unapproved cases
+        if (caseEntry.status !== 'APPROVED') {
+            const isOwner = caseEntry.uploader && caseEntry.uploader._id.toString() === req.user.id.toString();
+            const isAdmin = req.user.role === 'admin';
+            
+            if (!isOwner && !isAdmin) {
+                return res.status(403).json({ status: 'fail', message: 'You do not have permission to view this case.' });
+            }
+        }
+
         res.status(200).json({
             status: 'success',
             data: caseEntry

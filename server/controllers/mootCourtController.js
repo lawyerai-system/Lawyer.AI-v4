@@ -96,6 +96,11 @@ exports.sendMessage = async (req, res) => {
             return res.status(404).json({ status: 'fail', message: 'Session not found.' });
         }
 
+        // IDOR Protection: Ensure user owns the session
+        if (session.userId.toString() !== req.user.id.toString()) {
+            return res.status(403).json({ status: 'fail', message: 'Unauthorized to access this session.' });
+        }
+
         // Add user message to history
         session.messages.push({ sender: 'User', content: message });
 
@@ -163,6 +168,11 @@ exports.endSession = async (req, res) => {
         const session = await MootCourtSession.findById(sessionId);
         if (!session) {
             return res.status(404).json({ status: 'fail', message: 'Session not found.' });
+        }
+
+        // IDOR Protection: Ensure user owns the session
+        if (session.userId.toString() !== req.user.id.toString()) {
+            return res.status(403).json({ status: 'fail', message: 'Unauthorized to access this session.' });
         }
 
         // Generate Evaluation

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaQuoteLeft, FaRocket, FaBullseye, FaUsers, FaMicrochip, FaArrowRight, FaScaleBalanced, FaGraduationCap } from 'react-icons/fa6';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
-import AIModel from '../../components/Landing/AIModel';
+
+const AIModel = lazy(() => import('../../components/Landing/AIModel'));
 
 const FixedBackground = styled.div`
   position: fixed;
@@ -237,14 +238,16 @@ const AboutPage = () => {
     <PageWrapper>
       <LandingNav />
       <FixedBackground>
-        <AIModel />
+        <Suspense fallback={<div style={{ background: '#0b0d14', inset: 0 }} />}>
+          <AIModel />
+        </Suspense>
       </FixedBackground>
       <ContentContainer>
         <PageContainer>
           <HeroSection>
             <h1>Redefining Justice</h1>
             <p>
-              Lawyer.AI is an AI-powered legal assistance platform designed to help
+              LegalPal is an AI-powered legal assistance platform designed to help
               civilians, law students, and lawyers access legal knowledge and high-performance tools.
             </p>
           </HeroSection>
@@ -255,7 +258,7 @@ const AboutPage = () => {
             <ContentBlock>
               <h2><FaArrowRight size={24} /> Platform Introduction</h2>
               <p>
-                In a world where legal processes can be overwhelming, Lawyer.AI acts as a
+                In a world where legal processes can be overwhelming, LegalPal acts as a
                 bridge between complex law and the citizens who need it. We've built an
                 ecosystem that transforms legal research from weeks to seconds, bringing a
                 new level of clarity to the justice system.

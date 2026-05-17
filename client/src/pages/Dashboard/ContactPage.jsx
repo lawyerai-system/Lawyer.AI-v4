@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import styled, { keyframes } from 'styled-components';
 import api from '../../utils/axios';
 import { useAuth } from '../../context/AuthContext';
 import { FaPaperPlane, FaSpinner, FaEnvelope, FaPhone, FaLocationDot, FaCircleCheck, FaUserTag, FaCircleInfo } from 'react-icons/fa6';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
-import AIModel from '../../components/Landing/AIModel';
 import { toast } from 'react-hot-toast';
+
+const AIModel = lazy(() => import('../../components/Landing/AIModel'));
 
 const FixedBackground = styled.div`
   position: fixed;
@@ -315,7 +316,9 @@ const ContactPage = () => {
     <PageWrapper>
       <LandingNav />
       <FixedBackground>
-        <AIModel />
+        <Suspense fallback={<div style={{ background: '#0b0d14', inset: 0 }} />}>
+          <AIModel />
+        </Suspense>
       </FixedBackground>
       <ContentContainer>
         <Container>

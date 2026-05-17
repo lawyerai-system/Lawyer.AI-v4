@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const dotenv = require('dotenv');
 const http = require('http');
 const path = require('path');
@@ -8,6 +11,7 @@ const corsOptions = require('./config/cors');
 const apiRoutes = require('./routes/index');
 const errorHandler = require('./middleware/errorHandler');
 const checkMaintenanceMode = require('./middleware/maintenanceMiddleware');
+const { apiLimiter } = require('./middleware/rateLimiter');
 const { initSocket } = require('./socket');
 const startCleanupJob = require('./scripts/cleanupJob');
 
@@ -20,9 +24,30 @@ const server = http.createServer(app);
 connectDB();
 
 // Global Middleware
+// Trust proxy if we're behind a reverse proxy (Heroku, AWS ELB, etc)
+app.set('trust proxy', 1);
+
+// Set security HTTP headers
+app.use(helmet({
+  crossOriginResourcePolicy: false, // allow images to load locally if requested cross-origin
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}));
+
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
-app.use(express.json());
+
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' })); // Limit body payload to 10kb to prevent DOS
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+app.use(xss());
 app.use(checkMaintenanceMode);
 
 // Static Files
@@ -32,7 +57,7 @@ const distPath = path.join(__dirname, '../client/dist');
 app.use(express.static(distPath));
 
 // API Routes
-app.use('/api', apiRoutes);
+app.use('/api', apiLimiter, apiRoutes);
 
 app.get("/api/chatbot", (req, res) => {
     res.json({ chatbotId: "67adae0c9e89a6ec0f140953", type: "default" });

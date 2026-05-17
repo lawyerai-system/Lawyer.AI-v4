@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import styled, { keyframes } from 'styled-components';
 import {
   FaRobot, FaGavel, FaPenNib, FaBook, FaScaleUnbalanced,
@@ -8,8 +8,9 @@ import {
 } from 'react-icons/fa6';
 import LandingNav from '../../components/Common/LandingNav';
 import LandingFooter from '../../components/Common/LandingFooter';
-import AIModel from '../../components/Landing/AIModel';
 import { useAuth } from '../../context/AuthContext';
+
+const AIModel = lazy(() => import('../../components/Landing/AIModel'));
 
 const FixedBackground = styled.div`
   position: fixed;
@@ -262,7 +263,9 @@ const FeaturesPage = () => {
     <PageWrapper>
       <LandingNav />
       <FixedBackground>
-        <AIModel />
+        <Suspense fallback={<div style={{ background: '#0b0d14', inset: 0 }} />}>
+          <AIModel />
+        </Suspense>
       </FixedBackground>
       <ContentContainer>
         <PageContainer>

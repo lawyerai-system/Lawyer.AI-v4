@@ -237,6 +237,22 @@ userSchema.methods.correctPassword = async function (candidatePassword) {
   }
 };
 
+// Password reset method
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  
+  // Hash token and save to database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+    
+  // Set expiration to 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  
+  return resetToken;
+};
+
 // Activity tracking methods
 userSchema.methods.updateLastLogin = function () {
   this.lastLogin = new Date();

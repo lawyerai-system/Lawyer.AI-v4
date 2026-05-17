@@ -163,7 +163,7 @@ const ResetPassword = () => {
         <FormCard>
           <Title>Reset Password</Title>
           <Subtitle>
-            Set a new password for your Lawyer.AI account.
+            Set a new password for your LegalPal account.
           </Subtitle>
           <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} onSubmit={handleSubmit}>
             <InputGroup>

@@ -11,7 +11,8 @@
     "client": "npm run dev --workspace=@lawyer-ai/client",
     "server": "npm run dev --workspace=@lawyer-ai/server",
     "install-all": "npm install",
-    "build": "npm run build --workspace=@lawyer-ai/client"
+    "build": "npm run build --workspace=@lawyer-ai/client",
+    "preview": "npm run preview --workspace=@lawyer-ai/client"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

@@ -526,7 +526,10 @@ const Navbar = () => {
           </UserDropdown>
         </div>
 
-        <MobileMenuBtn onClick={() => setIsMobileOpen(!isMobileOpen)}>
+        <MobileMenuBtn 
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
+        >
           {isMobileOpen ? <FaXmark /> : <FaBars />}
         </MobileMenuBtn>
       </NavContainer>

@@ -44,7 +44,8 @@ const getMessageInfo = async (type, from, to) => {
 
 exports.getUserContacts = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
 
         if (!userId) return res.status(400).json({ message: 'Missing required information.' });
 
@@ -111,7 +112,8 @@ exports.getUserContacts = async (req, res) => {
 
 exports.getUserMessages = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
         const { type, chatId } = req.query;
 
         if (!userId || !type || !chatId) {
@@ -146,7 +148,8 @@ exports.getUserMessages = async (req, res) => {
 // CREATE
 exports.postUserMessage = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
         const { chatId } = req.query;
         const { message } = req.body;
 
@@ -170,7 +173,8 @@ exports.postUserMessage = async (req, res) => {
 
 exports.postRoom = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
         const { name, users, avatarImage } = req.body;
 
         if (!userId || !name || !users || !avatarImage) {
@@ -194,7 +198,8 @@ exports.postRoom = async (req, res) => {
 // UPDATE
 exports.updateMessageReadStatus = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
         const { type, chatId } = req.query;
 
         if (!userId || !type || !chatId) {
@@ -229,6 +234,11 @@ exports.toggleMessagePin = async (req, res) => {
         const message = await Message.findById(messageId);
         if (!message) return res.status(404).json({ message: 'Message not found' });
 
+        // IDOR Protection: Must be a participant of the chat to pin
+        if (!message.users.includes(req.user.id)) {
+            return res.status(403).json({ message: 'Unauthorized to pin this message' });
+        }
+
         message.isPinned = !message.isPinned;
         await message.save();
 
@@ -242,7 +252,8 @@ exports.editMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
         const { message: newMessage } = req.body;
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
 
         const message = await Message.findById(messageId);
         if (!message) return res.status(404).json({ message: 'Message not found' });
@@ -263,7 +274,8 @@ exports.editMessage = async (req, res) => {
 exports.deleteMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
 
         const message = await Message.findById(messageId);
         if (!message) return res.status(404).json({ message: 'Message not found' });
@@ -282,7 +294,8 @@ exports.deleteMessage = async (req, res) => {
 // AI SUMMARY
 exports.generateChatSummary = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
         const { type, chatId } = req.body;
 
         const filter = type === 'room' ? [chatId] : [userId, chatId];
@@ -336,7 +349,8 @@ exports.generateChatSummary = async (req, res) => {
 
 exports.getChatSummary = async (req, res) => {
     try {
-        const { userId } = req.params;
+        // IDOR Protection: Always use authenticated user's ID
+        const userId = req.user.id;
         const { type, chatId } = req.query;
         const consId = getConsolidatedChatId(userId, chatId, type);
 

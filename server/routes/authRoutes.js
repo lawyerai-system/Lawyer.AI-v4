@@ -2,6 +2,17 @@ const express = require('express');
 const authController = require('../controllers/authController');
 const multer = require('multer');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
+
+// Rate limiting for login attempts
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login requests per `window` (here, per 15 minutes)
+  message: {
+    status: 'error',
+    message: 'Too many login attempts from this IP, please try again after 15 minutes'
+  }
+});
 
 // Configure multer for profile image uploads
 const storage = multer.diskStorage({
@@ -40,7 +51,7 @@ const router = express.Router();
 
 // Public routes
 router.post('/signup', authController.signup);
-router.post('/login', authController.login);
+router.post('/login', loginLimiter, authController.login);
 router.post('/google', authController.googleLoginFixed);
 router.get('/verify/:token', authController.verifyEmail);
 router.post('/resend-verification', authController.resendVerification);

@@ -209,7 +209,11 @@ const LandingNav = () => {
             {navItems.map(item => (
               <NavLink 
                 key={item.path}
-                onClick={() => navigate(item.path)}
+                href={item.path}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(item.path);
+                }}
                 $active={location.pathname === item.path}
               >
                 {item.label}
@@ -230,7 +234,10 @@ const LandingNav = () => {
               </LoginBtn>
             )}
             
-            <MenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <MenuButton 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
               {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </MenuButton>
           </ActionButtonGroup>

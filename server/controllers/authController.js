@@ -957,6 +957,9 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.correctPassword(password))) {
+      // SECURITY LOGGING: Track failed authentication attempts
+      console.warn(`[SECURITY AUTH_FAILURE] Failed login attempt for email: ${email} from IP: ${req.ip} at ${new Date().toISOString()}`);
+      
       return res.status(401).json({
         status: 'error',
         message: 'Incorrect email or password'
@@ -1679,6 +1682,89 @@ exports.googleLoginFixed = async (req, res) => {
     res.status(400).json({
       status: 'error',
       message: err.message || 'Google authentication failed'
+    });
+  }
+};
+
+// Forgot Password
+exports.forgotPassword = async (req, res) => {
+  try {
+    // 1) Get user based on POSTed email
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      // Don't reveal if email exists or not for security, just send a generic success message
+      return res.status(200).json({
+        status: 'success',
+        message: 'If an account with that email exists, we have sent a password reset link.'
+      });
+    }
+
+    // 2) Generate the random reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // 3) Send it to user's email
+    try {
+      await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+      
+      res.status(200).json({
+        status: 'success',
+        message: 'If an account with that email exists, we have sent a password reset link.'
+      });
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      console.error('Email sending error:', err);
+      return res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending the email. Try again later!'
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      message: err.message
+    });
+  }
+};
+
+// Reset Password
+exports.resetPassword = async (req, res) => {
+  try {
+    // 1) Get user based on the token
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(req.params.token)
+      .digest('hex');
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    // 2) If token has not expired, and there is user, set the new password
+    if (!user) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Token is invalid or has expired'
+      });
+    }
+
+    user.password = req.body.password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+
+    // 3) Update changedPasswordAt property for the user (handled above)
+    // 4) Log the user in, send JWT
+    createSendToken(user, 200, res);
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      message: err.message
     });
   }
 };
