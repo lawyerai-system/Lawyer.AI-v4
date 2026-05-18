@@ -157,3 +157,18 @@
     - [x] Fix Pagination Button wrapping.
 - [x] **About Page Polish**
     - [x] Fix Typography size on mobile.
+
+## Phase 7: Mobile Integration & Local APK Packaging
+- [x] **Pre-requisite Adapters**
+    - [x] Decouple Axios base URL from Vite proxy for absolute remote targeting.
+    - [x] Add WebView origin header targets to backend Express CORS configurations.
+- [ ] **Capacitor Workspace Initialization**
+    - [ ] Install `@capacitor/core` and `@capacitor/cli` in the `/client` directory.
+    - [ ] Initialize `capacitor.config.json` and add `android` platform driver.
+- [ ] **Android Studio Local Linking**
+    - [ ] Run release client build: `npm run build` inside workspace client.
+    - [ ] Synchronize web-app build to mobile wrapper: `npx cap sync`.
+- [ ] **Local APK Sideload & Page-by-Page Testing**
+    - [ ] Compile debug APK (`app-debug.apk`) via Gradle inside Android Studio.
+    - [ ] Deploy APK on physical Android device for comprehensive interface validation.
+

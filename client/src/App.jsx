@@ -59,7 +59,10 @@ const CaseDetails = lazy(() => import('./pages/Dashboard/CaseLibrary/CaseDetails
 const CasePredictor = lazy(() => import('./pages/Dashboard/Predictor/CasePredictor'));
 const CourtSimulation = lazy(() => import('./pages/Dashboard/Simulation/CourtSimulation'));
 const AICaseBuilder = lazy(() => import('./pages/Dashboard/Builder/AICaseBuilder'));
-const Hubs = lazy(() => import('./pages/Dashboard/Hubs/Hubs'));
+const ResearchHub = lazy(() => import('./pages/Dashboard/Hubs/Hubs').then(module => ({ default: module.ResearchHub })));
+const PracticeHub = lazy(() => import('./pages/Dashboard/Hubs/Hubs').then(module => ({ default: module.PracticeHub })));
+const AcademyHub = lazy(() => import('./pages/Dashboard/Hubs/Hubs').then(module => ({ default: module.AcademyHub })));
+const CommunityHub = lazy(() => import('./pages/Dashboard/Hubs/Hubs').then(module => ({ default: module.CommunityHub })));
 
 // Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout'));
@@ -165,6 +168,10 @@ function App() {
                 <Route path="outcome-predictor" element={<CasePredictor />} />
                 <Route path="judicial-simulation" element={<CourtSimulation />} />
                 <Route path="case-builder" element={<AICaseBuilder />} />
+                <Route path="research" element={<ResearchHub />} />
+                <Route path="practice" element={<PracticeHub />} />
+                <Route path="academy" element={<AcademyHub />} />
+                <Route path="community" element={<CommunityHub />} />
               </Route>
 
               {/* Student Dashboard */}
@@ -191,6 +198,10 @@ function App() {
                 <Route path="case-library/upload" element={<UploadCase />} />
                 <Route path="case-library/:id" element={<CaseDetails />} />
                 <Route path="case-builder" element={<AICaseBuilder />} />
+                <Route path="research" element={<ResearchHub />} />
+                <Route path="practice" element={<PracticeHub />} />
+                <Route path="academy" element={<AcademyHub />} />
+                <Route path="community" element={<CommunityHub />} />
               </Route>
 
               {/* Civilian Dashboard */}
@@ -209,6 +220,8 @@ function App() {
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="courtroom" element={<CourtroomPage />} />
                 <Route path="ipc" element={<IPCPage />} />
+                <Route path="research" element={<ResearchHub />} />
+                <Route path="community" element={<CommunityHub />} />
               </Route>
 
               {/* Admin Dashboard */}
@@ -232,6 +245,10 @@ function App() {
                 <Route path="announcements" element={<AnnouncementManagement />} />
                 <Route path="settings" element={<SettingsManagement />} />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="research" element={<ResearchHub />} />
+                <Route path="practice" element={<PracticeHub />} />
+                <Route path="academy" element={<AcademyHub />} />
+                <Route path="community" element={<CommunityHub />} />
               </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
